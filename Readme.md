@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Оксана Жук](https://up.htmlacademy.ru/javascript/14/user/614941).
-* Наставник: `Неизвестно`.
+* Наставник: [Даниил Оношко](https://htmlacademy.ru/profile/id154426).
 
 ---
 
