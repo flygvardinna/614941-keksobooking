@@ -48,13 +48,12 @@ var shuffleArray = function (array) {
   return array;
 };
 
-var getAdType = function (title) {  //функция всегда возвращает flat (то есть первое, что указано в return)
-  //независимо от того, что в title
-  if (title === "Большая уютная квартира" || "Маленькая неуютная квартира") {
+var getAdType = function (title) {
+  if (title === "Большая уютная квартира" || title === "Маленькая неуютная квартира") {
     return "flat";
-  } else if (title === "Огромный прекрасный дворец" || "Маленький ужасный дворец") {
+  } else if (title === "Огромный прекрасный дворец" || title === "Маленький ужасный дворец") {
     return "palace";
-  } else if (title === "Красивый гостевой домик" || "Некрасивый негостеприимный домик") {
+  } else if (title === "Красивый гостевой домик" || title === "Некрасивый негостеприимный домик") {
     return "house";
   }
     return "bungalo";
@@ -101,8 +100,7 @@ var makeAdsList = function () {
         title: adTitle,
         address: pointX + ", " + pointY,
         price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: getAdType(adTitle), //всегда возвращает flat (то есть первое, что указано в return)
-        // независимо от того, что в title
+        type: getAdType(adTitle),
         rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
         guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
         checkin: getRandomElement(HOURS),
