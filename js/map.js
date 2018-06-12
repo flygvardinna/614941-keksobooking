@@ -181,4 +181,3 @@ var renderFirstAd = function (ads) {
 var adsList = makeAdsList();
 renderPinsList(adsList);
 renderFirstAd(adsList);
-console.log(adsList);
