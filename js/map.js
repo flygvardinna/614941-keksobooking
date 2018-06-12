@@ -43,7 +43,10 @@ var getRandomElement = function (array) {
 var shuffleArray = function (array) {
   for (var i = array.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    var x = array[i];
+    array[i] = array[j];
+    array[j] = x;
+    /*[array[i], array[j]] = [array[j], array[i]];*/
   }
   return array;
 };
