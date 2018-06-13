@@ -51,15 +51,13 @@ var getAdType = function (title) {
     case 'Большая уютная квартира':
     case 'Маленькая неуютная квартира':
       return 'flat';
-      break;
+
     case 'Огромный прекрасный дворец':
     case 'Маленький ужасный дворец':
       return 'palace';
-      break;
     case 'Красивый гостевой домик':
     case 'Некрасивый негостеприимный домик':
       return 'house';
-      break;
     default:
       return 'bungalo';
   }
@@ -69,13 +67,10 @@ var insertCorrectType = function (type) {
   switch (type) {
     case 'flat':
       return 'Квартира';
-      break;
     case 'palace':
       return 'Дворец';
-      break;
     case 'house':
       return 'Дом';
-      break;
     default:
       return 'Бунгало';
   }
