@@ -51,7 +51,6 @@ var getAdType = function (title) {
     case 'Большая уютная квартира':
     case 'Маленькая неуютная квартира':
       return 'flat';
-
     case 'Огромный прекрасный дворец':
     case 'Маленький ужасный дворец':
       return 'palace';
