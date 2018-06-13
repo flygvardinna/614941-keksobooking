@@ -24,12 +24,9 @@ map.classList.remove('map--faded');
 
 var pinsElement = map.querySelector('.map__pins');
 var nextAfterAdsElement = map.querySelector('map__filters-container');
-var pinTemplate = document.querySelector('template')
-    .content
-    .querySelector('.map__pin');
-var adTemplate = document.querySelector('template')
-    .content
-    .querySelector('.map__card');
+var template = document.querySelector('template');
+var pinTemplate = template.content.querySelector('.map__pin');
+var adTemplate = template.content.querySelector('.map__card');
 
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -50,23 +47,38 @@ var shuffleArray = function (array) {
 };
 
 var getAdType = function (title) {
-  if (title === 'Большая уютная квартира' || title === 'Маленькая неуютная квартира') {
-    return 'flat';
-  } else if (title === 'Огромный прекрасный дворец' || title === 'Маленький ужасный дворец') {
-    return 'palace';
-  } else if (title === 'Красивый гостевой домик' || title === 'Некрасивый негостеприимный домик') {
-    return 'house';
-  } return 'bungalo';
+  switch (title) {
+    case 'Большая уютная квартира':
+    case 'Маленькая неуютная квартира':
+      return 'flat';
+      break;
+    case 'Огромный прекрасный дворец':
+    case 'Маленький ужасный дворец':
+      return 'palace';
+      break;
+    case 'Красивый гостевой домик':
+    case 'Некрасивый негостеприимный домик':
+      return 'house';
+      break;
+    default:
+      return 'bungalo';
+  }
 };
 
 var insertCorrectType = function (type) {
-  if (type === 'flat') {
-    return 'Квартира';
-  } else if (type === 'palace') {
-    return 'Дворец';
-  } else if (type === 'house') {
-    return 'Дом';
-  } return 'Бунгало';
+  switch (type) {
+    case 'flat':
+      return 'Квартира';
+      break;
+    case 'palace':
+      return 'Дворец';
+      break;
+    case 'house':
+      return 'Дом';
+      break;
+    default:
+      return 'Бунгало';
+  }
 };
 
 var makeFeaturesList = function (array) {
