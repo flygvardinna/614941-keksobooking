@@ -32,11 +32,12 @@ var template = document.querySelector('template');
 var pinTemplate = template.content.querySelector('.map__pin');
 var adTemplate = template.content.querySelector('.map__card');
 
-var disableFieldsets = function () {  // или можно просто в разметку добавить атрибут?
+var disableFieldsets = function () {
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].setAttribute('disabled', 'disabled');
   }
 };
+// или можно просто в разметку добавить атрибут?
 
 var makePageActive = function () {
   map.classList.remove('map--faded');
@@ -50,11 +51,13 @@ var makePageActive = function () {
 
   var onMapPinClick = function (evt) {
     var target = evt.target;
-    if (target.tagName != 'BUTTON') return;
+    if (target.tagName !== 'BUTTON')  {
+      return;
+    } else
     var avatar = target.querySelector('img').src;
-    for (var i = 0; i < adsList.length; i++) {
-      if (adsList[i].author.avatar === avatar) {
-        var currentAd = adsList[i];
+    for (var j = 0; j < adsList.length; j++) {
+      if (adsList[j].author.avatar === avatar) {
+        var currentAd = adsList[j];
         var fragment = document.createDocumentFragment();
         fragment.appendChild(renderAd(currentAd));
         map.insertBefore(fragment, nextAfterAdsElement);
@@ -64,7 +67,7 @@ var makePageActive = function () {
 };
 
 var setAddress = function () {
-  pointX = getRandomNumber(MIN_X, MAX_X); //позже надо заменить
+  pointX = getRandomNumber(MIN_X, MAX_X); // позже надо заменить
   pointY = getRandomNumber(MIN_Y, MAX_Y); // позже надо заменить
   form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
 };
