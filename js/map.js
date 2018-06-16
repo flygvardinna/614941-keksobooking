@@ -21,7 +21,6 @@ var MAP_PIN_HEIGHT = 70;
 
 var pointX;
 var pointY;
-
 var map = document.querySelector('.map');
 var pinsElement = map.querySelector('.map__pins');
 var mapPinMuffin = map.querySelector('.map__pin--main');
@@ -31,53 +30,6 @@ var fieldsets = form.querySelectorAll('fieldset');
 var template = document.querySelector('template');
 var pinTemplate = template.content.querySelector('.map__pin');
 var adTemplate = template.content.querySelector('.map__card');
-
-var disableFieldsets = function () {
-  for (var i = 0; i < fieldsets.length; i++) {
-    fieldsets[i].setAttribute('disabled', 'disabled');
-  }
-};
-// или можно просто в разметку добавить атрибут?
-
-var makePageActive = function () {
-  map.classList.remove('map--faded');
-  form.classList.remove('ad-form--disabled');
-  for (var i = 0; i < fieldsets.length; i++) {
-    fieldsets[i].removeAttribute('disabled');
-  }
-  var adsList = makeAdsList();
-  renderPinsList(adsList);
-  pinsElement.addEventListener('click', onMapPinClick);
-
-  var onMapPinClick = function (evt) {
-    var target = evt.target;
-    if (target.tagName !== 'BUTTON') {
-      return;
-    }
-    var avatar = target.querySelector('img').src;
-    for (var j = 0; j < adsList.length; j++) {
-      if (adsList[j].author.avatar === avatar) {
-        var currentAd = adsList[j];
-        var fragment = document.createDocumentFragment();
-        fragment.appendChild(renderAd(currentAd));
-        map.insertBefore(fragment, nextAfterAdsElement);
-      }
-    }
-  };
-};
-
-var setAddress = function () {
-  pointX = getRandomNumber(MIN_X, MAX_X); // позже надо заменить
-  pointY = getRandomNumber(MIN_Y, MAX_Y); // позже надо заменить
-  form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
-};
-
-disableFieldsets();
-
-mapPinMuffin.addEventListener('mouseup', function() {
-  makePageActive();
-  setAddress();
-});
 
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -136,43 +88,6 @@ var makeFeaturesList = function (array) {
   return adFeatures;
 };
 
-var makeAdsList = function () {
-  var similarAds = [];
-  var shuffledNumbers = shuffleArray(NUMBERS_FOR_AVATARS);
-  var shuffledTitles = shuffleArray(TITLES);
-  var adTitle;
-  for (var i = 0; i < SIMILAR_ADS_QUANTITY; i++) {
-    adTitle = shuffledTitles[i];
-    pointX = getRandomNumber(MIN_X, MAX_X);
-    pointY = getRandomNumber(MIN_Y, MAX_Y);
-    similarAds[i] = {
-      author: {
-        avatar: 'img/avatars/user0' + shuffledNumbers[i] + '.png'
-      },
-
-      offer: {
-        title: adTitle,
-        address: pointX + ', ' + pointY,
-        price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: getAdType(adTitle),
-        rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
-        guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
-        checkin: getRandomElement(HOURS),
-        checkout: getRandomElement(HOURS),
-        features: makeFeaturesList(FEATURES),
-        description: '',
-        photos: shuffleArray(PHOTOS)
-      },
-
-      location: {
-        x: pointX,
-        y: pointY
-      }
-    };
-  }
-  return similarAds;
-};
-
 var renderPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
   var mapPinTopLeftX = pin.location.x - MAP_PIN_HALF_WIDTH;
@@ -214,6 +129,49 @@ var renderAd = function (ad) {
   return adElement;
 };
 
+var disableFieldsets = function () {
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].setAttribute('disabled', 'disabled');
+  }
+};
+
+var makeAdsList = function () {
+  var similarAds = [];
+  var shuffledNumbers = shuffleArray(NUMBERS_FOR_AVATARS);
+  var shuffledTitles = shuffleArray(TITLES);
+  var adTitle;
+  for (var i = 0; i < SIMILAR_ADS_QUANTITY; i++) {
+    adTitle = shuffledTitles[i];
+    pointX = getRandomNumber(MIN_X, MAX_X);
+    pointY = getRandomNumber(MIN_Y, MAX_Y);
+    similarAds[i] = {
+      author: {
+        avatar: 'img/avatars/user0' + shuffledNumbers[i] + '.png'
+      },
+
+      offer: {
+        title: adTitle,
+        address: pointX + ', ' + pointY,
+        price: getRandomNumber(MIN_PRICE, MAX_PRICE),
+        type: getAdType(adTitle),
+        rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
+        guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
+        checkin: getRandomElement(HOURS),
+        checkout: getRandomElement(HOURS),
+        features: makeFeaturesList(FEATURES),
+        description: '',
+        photos: shuffleArray(PHOTOS)
+      },
+
+      location: {
+        x: pointX,
+        y: pointY
+      }
+    };
+  }
+  return similarAds;
+};
+
 var renderPinsList = function (pins) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < pins.length; i++) {
@@ -221,3 +179,51 @@ var renderPinsList = function (pins) {
   }
   pinsElement.appendChild(fragment);
 };
+
+var makePageActive = function () {
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].removeAttribute('disabled');
+  }
+};
+
+var setAddress = function () {
+  pointX = getRandomNumber(MIN_X, MAX_X); // позже надо заменить
+  pointY = getRandomNumber(MIN_Y, MAX_Y); // позже надо заменить
+  form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
+  // var mapPinTopLeftX = mapPinMuffin.location.x - MAP_PIN_HALF_WIDTH;
+  // var mapPinTopLeftY = mapPinMuffin.location.y - MAP_PIN_HEIGHT;
+  // размер метки (квадрат) 65*65 но есть острый конец 10*22 и непонятно, как посчитать полностью высоту метки.
+  // ширина 65. Также непонятно, откуда будут браться координаты метки.
+  // И где надо прописывать ограничения для X и Y
+};
+
+var onMapPinClick = function (evt) {
+  var target = evt.target;
+  if (target.tagName !== 'BUTTON') {
+    return;
+  }
+  var avatar = target.querySelector('img').src;
+  console.log(avatar);
+  for (var j = 0; j < adsList.length; j++) {
+    if (adsList[j].author.avatar === avatar) {
+      var currentAd = adsList[j];
+      var fragment = document.createDocumentFragment();
+      fragment.appendChild(renderAd(currentAd));
+      map.insertBefore(fragment, nextAfterAdsElement);
+    }
+  }
+};
+
+disableFieldsets();
+var adsList = makeAdsList();
+
+mapPinMuffin.addEventListener('mouseup', function() {
+  makePageActive();
+  setAddress();
+  renderPinsList(adsList);
+});
+
+var similarAdsPins = pinsElement.querySelectorAll('button[type=button]');
+// similarAdsPins.addEventListener('click', onMapPinClick);
