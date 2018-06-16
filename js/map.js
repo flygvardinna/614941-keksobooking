@@ -51,9 +51,9 @@ var makePageActive = function () {
 
   var onMapPinClick = function (evt) {
     var target = evt.target;
-    if (target.tagName !== 'BUTTON')  {
+    if (target.tagName !== 'BUTTON') {
       return;
-    } else
+    }
     var avatar = target.querySelector('img').src;
     for (var j = 0; j < adsList.length; j++) {
       if (adsList[j].author.avatar === avatar) {
