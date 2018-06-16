@@ -19,14 +19,62 @@ var MAX_GUESTS = 5;
 var MAP_PIN_HALF_WIDTH = 50 / 2;
 var MAP_PIN_HEIGHT = 70;
 
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+var pointX;
+var pointY;
 
+var map = document.querySelector('.map');
 var pinsElement = map.querySelector('.map__pins');
+var mapPinMuffin = map.querySelector('.map__pin--main');
 var nextAfterAdsElement = map.querySelector('map__filters-container');
+var form = document.querySelector('.ad-form');
+var fieldsets = form.querySelectorAll('fieldset');
 var template = document.querySelector('template');
 var pinTemplate = template.content.querySelector('.map__pin');
 var adTemplate = template.content.querySelector('.map__card');
+
+var disableFieldsets = function () {  // или можно просто в разметку добавить атрибут?
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].setAttribute('disabled', 'disabled');
+  }
+};
+
+var makePageActive = function () {
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].removeAttribute('disabled');
+  }
+  var adsList = makeAdsList();
+  renderPinsList(adsList);
+  pinsElement.addEventListener('click', onMapPinClick);
+
+  var onMapPinClick = function (evt) {
+    var target = evt.target;
+    if (target.tagName != 'BUTTON') return;
+    var avatar = target.querySelector('img').src;
+    for (var i = 0; i < adsList.length; i++) {
+      if (adsList[i].author.avatar === avatar) {
+        var currentAd = adsList[i];
+        var fragment = document.createDocumentFragment();
+        fragment.appendChild(renderAd(currentAd));
+        map.insertBefore(fragment, nextAfterAdsElement);
+      }
+    }
+  };
+};
+
+var setAddress = function () {
+  pointX = getRandomNumber(MIN_X, MAX_X); //позже надо заменить
+  pointY = getRandomNumber(MIN_Y, MAX_Y); // позже надо заменить
+  form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
+};
+
+disableFieldsets();
+
+mapPinMuffin.addEventListener('mouseup', function() {
+  makePageActive();
+  setAddress();
+});
 
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -90,8 +138,6 @@ var makeAdsList = function () {
   var shuffledNumbers = shuffleArray(NUMBERS_FOR_AVATARS);
   var shuffledTitles = shuffleArray(TITLES);
   var adTitle;
-  var pointX;
-  var pointY;
   for (var i = 0; i < SIMILAR_ADS_QUANTITY; i++) {
     adTitle = shuffledTitles[i];
     pointX = getRandomNumber(MIN_X, MAX_X);
@@ -112,7 +158,7 @@ var makeAdsList = function () {
         checkout: getRandomElement(HOURS),
         features: makeFeaturesList(FEATURES),
         description: '',
-        photos: shuffleArray(PHOTOS) // во всех объявлениях получается один и тот же порядок фото
+        photos: shuffleArray(PHOTOS)
       },
 
       location: {
@@ -154,18 +200,13 @@ var renderAd = function (ad) {
   adElement.querySelector('.popup__title').textContent = ad.offer.title;
   adElement.querySelector('.popup__text--address').textContent = ad.offer.address;
   adElement.querySelector('.popup__text--price').textContent = ad.offer.price + '₽/ночь';
-  // в разметке тут 5200&#x20bd;<span>/ночь</span></p> - надо ли делать innerHTML и копировать спец символ и спан?
-  // в CSS есть .popup__price span {font-size: 16px;} но в html нет класса .popup__price только .popup__text--price
   adElement.querySelector('.popup__type').textContent = insertCorrectType(adType);
   adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-  // нужна ли тут проверка, чтобы менялись окончания? 1 комнаТА или 5 комнаТ для 1 гостЯ или для 2 гостЕЙ
   adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   adElement.querySelector('.popup__features').textContent = ad.offer.features;
   adElement.querySelector('.popup__description').textContent = ad.offer.description;
   adElement.querySelector('.popup__avatar').src = ad.author.avatar;
   photoTemplate.src = ad.offer.photos[0];
-  // нужна ли тут проверка, чтобы следуюший шаг выполнялся только в том случае, если длина массива больше 1?
-  // Или это будет лишняя проверка по критериям?
   adElement.querySelector('.popup__photos').appendChild(renderPhotos(ad.offer.photos));
   return adElement;
 };
@@ -177,13 +218,3 @@ var renderPinsList = function (pins) {
   }
   pinsElement.appendChild(fragment);
 };
-
-var renderFirstAd = function (ads) {
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(renderAd(ads[0]));
-  map.insertBefore(fragment, nextAfterAdsElement);
-};
-
-var adsList = makeAdsList();
-renderPinsList(adsList);
-renderFirstAd(adsList);
