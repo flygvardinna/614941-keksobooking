@@ -18,13 +18,15 @@ var MIN_GUESTS = 1;
 var MAX_GUESTS = 5;
 var MAP_PIN_HALF_WIDTH = 50 / 2;
 var MAP_PIN_HEIGHT = 70;
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
 var pointX;
 var pointY;
 var map = document.querySelector('.map');
 var pinsElement = map.querySelector('.map__pins');
 var mapPinMuffin = map.querySelector('.map__pin--main');
-var nextAfterAdsElement = map.querySelector('map__filters-container');
+var nextAfterAdsElement = map.querySelector('.map__filters-container');
 var form = document.querySelector('.ad-form');
 var fieldsets = form.querySelectorAll('fieldset');
 var template = document.querySelector('template');
@@ -192,21 +194,28 @@ var setAddress = function () {
   pointX = getRandomNumber(MIN_X, MAX_X); // позже надо заменить
   pointY = getRandomNumber(MIN_Y, MAX_Y); // позже надо заменить
   form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
-  // var mapPinTopLeftX = mapPinMuffin.location.x - MAP_PIN_HALF_WIDTH;
-  // var mapPinTopLeftY = mapPinMuffin.location.y - MAP_PIN_HEIGHT;
-  // размер метки (квадрат) 65*65 но есть острый конец 10*22 и непонятно, как посчитать полностью высоту метки.
-  // ширина 65. Также непонятно, откуда будут браться координаты метки.
+  // размер метки (квадрат) 62*62 + острый конец 10*22. То есть высота метки 84 а ширина или 62 или 65 (ширина button)
+  // Также непонятно, откуда будут браться координаты острого конца метки после перетаскивания, где они будут записаны.
   // И где надо прописывать ограничения для X и Y
 };
 
 var onMapPinClick = function (evt) {
+  // плохой обработчик, так как на главную метку с маффином тоже реагирует, не находит подходящего alt.
+  // визуально всё ок, но выполняется лишний код
+  // так же плох тем, что если кликнуть мимо картинки, на ножку метки например, то не срабатывает
+  var closePopup = function () {
+    map.removeChild(popup);
+    document.removeEventListener('keydown', onPopupEscPress);
+  };
+  var onPopupEscPress = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      closePopup();
+    }
+  };
   var target = evt.target;
   if (target.tagName !== 'IMG') {
     return;
   }
-  // плохой обработчик, так как на главную метку с маффином тоже реагирует, не находит подходящего alt.
-  // визуально всё ок, но выполняется лишний код
-  // так же плох тем, что если кликнуть мимо картинки, на ножку метки например, то не срабатывает
   var alt = target.alt;
   // var alt = target.querySelector('img').alt; такой вариант - минус в том, что
   // если делать проверку на то, что tagName !== BUTTON, то не будет реагировать при клике на img
@@ -216,6 +225,17 @@ var onMapPinClick = function (evt) {
       var fragment = document.createDocumentFragment();
       fragment.appendChild(renderAd(currentAd));
       map.insertBefore(fragment, nextAfterAdsElement);
+      var popup = map.querySelector('.popup');
+      var popupClose = map.querySelector('.popup__close');
+      document.addEventListener('keydown', onPopupEscPress);
+      popupClose.addEventListener('click', function () {
+        closePopup();
+      });
+      popupClose.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === ENTER_KEYCODE) {
+            closePopup();
+        }
+      });
     }
   }
 };
@@ -230,6 +250,3 @@ mapPinMuffin.addEventListener('mouseup', function() {
 });
 
 pinsElement.addEventListener('click', onMapPinClick);
-
-// var similarAdsPins = pinsElement.querySelectorAll('button[type=button]');
-// similarAdsPins.addEventListener('click', onMapPinClick);
