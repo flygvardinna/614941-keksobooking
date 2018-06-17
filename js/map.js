@@ -201,13 +201,17 @@ var setAddress = function () {
 
 var onMapPinClick = function (evt) {
   var target = evt.target;
-  if (target.tagName !== 'BUTTON') {
+  if (target.tagName !== 'IMG') {
     return;
   }
-  var avatar = target.querySelector('img').src;
-  console.log(avatar);
+  // плохой обработчик, так как на главную метку с маффином тоже реагирует, не находит подходящего alt.
+  // визуально всё ок, но выполняется лишний код
+  // так же плох тем, что если кликнуть мимо картинки, на ножку метки например, то не срабатывает
+  var alt = target.alt;
+  // var alt = target.querySelector('img').alt; такой вариант - минус в том, что
+  // если делать проверку на то, что tagName !== BUTTON, то не будет реагировать при клике на img
   for (var j = 0; j < adsList.length; j++) {
-    if (adsList[j].author.avatar === avatar) {
+    if (adsList[j].offer.title === alt) {
       var currentAd = adsList[j];
       var fragment = document.createDocumentFragment();
       fragment.appendChild(renderAd(currentAd));
@@ -225,5 +229,7 @@ mapPinMuffin.addEventListener('mouseup', function() {
   renderPinsList(adsList);
 });
 
-var similarAdsPins = pinsElement.querySelectorAll('button[type=button]');
+pinsElement.addEventListener('click', onMapPinClick);
+
+// var similarAdsPins = pinsElement.querySelectorAll('button[type=button]');
 // similarAdsPins.addEventListener('click', onMapPinClick);
