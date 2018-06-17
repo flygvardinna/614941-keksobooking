@@ -207,8 +207,8 @@ var onMapPinClick = function (evt) {
     map.removeChild(popup);
     document.removeEventListener('keydown', onPopupEscPress);
   };
-  var onPopupEscPress = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+  var onPopupEscPress = function (eventObj) {
+    if (eventObj.keyCode === ESC_KEYCODE) {
       closePopup();
     }
   };
@@ -231,9 +231,9 @@ var onMapPinClick = function (evt) {
       popupClose.addEventListener('click', function () {
         closePopup();
       });
-      popupClose.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === ENTER_KEYCODE) {
-            closePopup();
+      popupClose.addEventListener('keydown', function (eventObject) {
+        if (eventObject.keyCode === ENTER_KEYCODE) {
+          closePopup();
         }
       });
     }
@@ -243,7 +243,7 @@ var onMapPinClick = function (evt) {
 disableFieldsets();
 var adsList = makeAdsList();
 
-mapPinMuffin.addEventListener('mouseup', function() {
+mapPinMuffin.addEventListener('mouseup', function () {
   makePageActive();
   setAddress();
   renderPinsList(adsList);
