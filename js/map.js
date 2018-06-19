@@ -186,7 +186,7 @@ var makeAdsList = function () {
 var renderPinsList = function (pins) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < pins.length; i++) {
-    var child = fragment.appendChild(renderPin(pins[i]));
+    fragment.appendChild(renderPin(pins[i]));
   }
   pinsElement.appendChild(fragment);
 };
@@ -343,47 +343,49 @@ var onFormSubmitClick = function () {
   var isGuestsNumberCorrect;
   switch (selectedRoomsNumber) {
     case '1':
-    switch (selectedGuestsNumber) {
-      case '1':
-      isGuestsNumberCorrect = true;
-      break;
-      default:
-      isGuestsNumberCorrect = false;
-    }
+      switch (selectedGuestsNumber) {
+        case '1':
+        isGuestsNumberCorrect = true;
+        break;
+        default:
+        isGuestsNumberCorrect = false;
+      }
     break;
     case '2':
-    switch (selectedGuestsNumber) {
-      case '1':
-      case '2':
-      isGuestsNumberCorrect = true;
-      break;
-      default:
-      isGuestsNumberCorrect = false;
-    }
+      switch (selectedGuestsNumber) {
+        case '1':
+        case '2':
+        isGuestsNumberCorrect = true;
+        break;
+        default:
+        isGuestsNumberCorrect = false;
+      }
     break;
     case '3':
-    switch (selectedGuestsNumber) {
-      case '1':
-      case '2':
-      case '3':
-      isGuestsNumberCorrect = true;
-      break;
-      default:
-      isGuestsNumberCorrect = false;
-    }
+      switch (selectedGuestsNumber) {
+        case '1':
+        case '2':
+        case '3':
+        isGuestsNumberCorrect = true;
+        break;
+        default:
+        isGuestsNumberCorrect = false;
+      }
     break;
     case '100':
-    switch (selectedGuestsNumber) {
-      case '0':
-      isGuestsNumberCorrect = true;
-      break;
-      default:
-      isGuestsNumberCorrect = false;
-    }
+      switch (selectedGuestsNumber) {
+        case '0':
+        isGuestsNumberCorrect = true;
+        break;
+        default:
+        isGuestsNumberCorrect = false;
+      }
   }
   if (!isGuestsNumberCorrect) {
     guestsNumber.setCustomValidity('Пожалуйста, выберите подходящее количество гостей из списка.');
-  } else guestsNumber.setCustomValidity('');
+  } else {
+    guestsNumber.setCustomValidity('');
+  }
 };
 
 disableFieldsets();
@@ -404,7 +406,7 @@ guestsNumber.addEventListener('change', onGuestsNumberChange);
 formReset.addEventListener('click', function () {
   map.classList.add('map--faded');
   form.classList.add('ad-form--disabled');
-  pricePerNight.placeholder = "1000";
+  pricePerNight.placeholder = '1000';
   var popup = map.querySelector('.popup');
   map.removeChild(popup);
 });
