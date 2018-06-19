@@ -345,40 +345,40 @@ var onFormSubmitClick = function () {
     case '1':
       switch (selectedGuestsNumber) {
         case '1':
-        isGuestsNumberCorrect = true;
-        break;
+          isGuestsNumberCorrect = true;
+          break;
         default:
-        isGuestsNumberCorrect = false;
+          isGuestsNumberCorrect = false;
       }
-    break;
+      break;
     case '2':
       switch (selectedGuestsNumber) {
         case '1':
         case '2':
-        isGuestsNumberCorrect = true;
-        break;
+          isGuestsNumberCorrect = true;
+          break;
         default:
-        isGuestsNumberCorrect = false;
+          isGuestsNumberCorrect = false;
       }
-    break;
+      break;
     case '3':
       switch (selectedGuestsNumber) {
         case '1':
         case '2':
         case '3':
-        isGuestsNumberCorrect = true;
-        break;
+          isGuestsNumberCorrect = true;
+          break;
         default:
-        isGuestsNumberCorrect = false;
+          isGuestsNumberCorrect = false;
       }
-    break;
+      break;
     case '100':
       switch (selectedGuestsNumber) {
         case '0':
-        isGuestsNumberCorrect = true;
-        break;
+          isGuestsNumberCorrect = true;
+          break;
         default:
-        isGuestsNumberCorrect = false;
+          isGuestsNumberCorrect = false;
       }
   }
   if (!isGuestsNumberCorrect) {
