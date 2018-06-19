@@ -23,12 +23,21 @@ var ENTER_KEYCODE = 13;
 
 var pointX;
 var pointY;
+var optionsList;
 var map = document.querySelector('.map');
 var pinsElement = map.querySelector('.map__pins');
 var mapPinMuffin = map.querySelector('.map__pin--main');
 var nextAfterAdsElement = map.querySelector('.map__filters-container');
 var form = document.querySelector('.ad-form');
+var formReset = form.querySelector('.ad-form__reset');
+var formSubmit = form.querySelector('.ad-form__submit');
 var fieldsets = form.querySelectorAll('fieldset');
+var typeOfAccomodation = form.querySelector('#type');
+var pricePerNight = form.querySelector('#price');
+var timeCheckin = form.querySelector('#timein');
+var timeCheckout = form.querySelector('#timeout');
+var roomsNumber = form.querySelector('#room_number');
+var guestsNumber = form.querySelector('#capacity');
 var template = document.querySelector('template');
 var pinTemplate = template.content.querySelector('.map__pin');
 var adTemplate = template.content.querySelector('.map__card');
@@ -177,7 +186,7 @@ var makeAdsList = function () {
 var renderPinsList = function (pins) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < pins.length; i++) {
-    fragment.appendChild(renderPin(pins[i]));
+    var child = fragment.appendChild(renderPin(pins[i]));
   }
   pinsElement.appendChild(fragment);
 };
@@ -200,9 +209,6 @@ var setAddress = function () {
 };
 
 var onMapPinClick = function (evt) {
-  // плохой обработчик, так как на главную метку с маффином тоже реагирует, не находит подходящего alt.
-  // визуально всё ок, но выполняется лишний код
-  // так же плох тем, что если кликнуть мимо картинки, на ножку метки например, то не срабатывает
   var closePopup = function () {
     map.removeChild(popup);
     document.removeEventListener('keydown', onPopupEscPress);
@@ -213,12 +219,10 @@ var onMapPinClick = function (evt) {
     }
   };
   var target = evt.target;
-  if (target.tagName !== 'IMG') {
+  if (target.tagName !== 'BUTTON') {
     return;
   }
-  var alt = target.alt;
-  // var alt = target.querySelector('img').alt; такой вариант - минус в том, что
-  // если делать проверку на то, что tagName !== BUTTON, то не будет реагировать при клике на img
+  var alt = target.querySelector('img').alt;
   for (var j = 0; j < adsList.length; j++) {
     if (adsList[j].offer.title === alt) {
       var currentAd = adsList[j];
@@ -240,6 +244,148 @@ var onMapPinClick = function (evt) {
   }
 };
 
+var onTypeChange = function (evt) {
+  var target = evt.target;
+  var selectedType = target.value;
+  var setType = function () {
+    switch (selectedType) {
+      case 'bungalo':
+        return '0';
+      case 'house':
+        return '5000';
+      case 'palace':
+        return '10000';
+      default:
+        return '1000';
+    }
+  };
+  var setMinPrice = function () {
+    var minPrice = setType();
+    pricePerNight.min = minPrice;
+    pricePerNight.placeholder = minPrice;
+  };
+  setMinPrice();
+};
+
+var onTimeCheckinChange = function (evt) {
+  timeCheckout.value = evt.target.value;
+};
+
+var onTimeCheckoutChange = function (evt) {
+  timeCheckin.value = evt.target.value;
+};
+
+var bringAllOptionsBack = function () {
+  for (var i = 0; i < optionsList.length; i++) {
+    optionsList[i].classList.remove('hidden');
+  }
+};
+
+var onRoomsNumberChange = function (evt) {
+  // проблема в том, что если выбираешь, например, 100 комнат, а потом Не для гостей, то уже никак
+  // без перезагрузки страницы или нажатия на Очистить нельзя выбрать другие варианты
+  var target = evt.target;
+  var selectedRoomsNumber = target.value;
+  var setGuestsNumber = function () {
+    if (selectedRoomsNumber === '2') {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[3].classList.add('hidden');
+    } else if (selectedRoomsNumber === '3') {
+      bringAllOptionsBack();
+      optionsList[3].classList.add('hidden');
+    } else if (selectedRoomsNumber === '100') {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[1].classList.add('hidden');
+      optionsList[2].classList.add('hidden');
+    } else {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[1].classList.add('hidden');
+      optionsList[3].classList.add('hidden');
+    }
+  };
+  optionsList = guestsNumber.options;
+  setGuestsNumber();
+};
+
+var onGuestsNumberChange = function (evt) {
+  var target = evt.target;
+  var selectedGuestsNumber = target.value;
+  var setRoomsNumber = function () {
+    if (selectedGuestsNumber === '2') {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[3].classList.add('hidden');
+    } else if (selectedGuestsNumber === '1') {
+      bringAllOptionsBack();
+      optionsList[3].classList.add('hidden');
+    } else if (selectedGuestsNumber === '0') {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[1].classList.add('hidden');
+      optionsList[2].classList.add('hidden');
+    } else {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[1].classList.add('hidden');
+      optionsList[3].classList.add('hidden');
+    }
+  };
+  optionsList = roomsNumber.options;
+  setRoomsNumber();
+};
+
+var onFormSubmitClick = function () {
+  var selectedRoomsNumber = roomsNumber.value;
+  var selectedGuestsNumber = guestsNumber.value;
+  var isGuestsNumberCorrect;
+  switch (selectedRoomsNumber) {
+    case '1':
+    switch (selectedGuestsNumber) {
+      case '1':
+      isGuestsNumberCorrect = true;
+      break;
+      default:
+      isGuestsNumberCorrect = false;
+    }
+    break;
+    case '2':
+    switch (selectedGuestsNumber) {
+      case '1':
+      case '2':
+      isGuestsNumberCorrect = true;
+      break;
+      default:
+      isGuestsNumberCorrect = false;
+    }
+    break;
+    case '3':
+    switch (selectedGuestsNumber) {
+      case '1':
+      case '2':
+      case '3':
+      isGuestsNumberCorrect = true;
+      break;
+      default:
+      isGuestsNumberCorrect = false;
+    }
+    break;
+    case '100':
+    switch (selectedGuestsNumber) {
+      case '0':
+      isGuestsNumberCorrect = true;
+      break;
+      default:
+      isGuestsNumberCorrect = false;
+    }
+  }
+  if (!isGuestsNumberCorrect) {
+    guestsNumber.setCustomValidity('Пожалуйста, выберите подходящее количество гостей из списка.');
+  } else guestsNumber.setCustomValidity('');
+};
+
 disableFieldsets();
 var adsList = makeAdsList();
 
@@ -250,3 +396,16 @@ mapPinMuffin.addEventListener('mouseup', function () {
 });
 
 pinsElement.addEventListener('click', onMapPinClick);
+typeOfAccomodation.addEventListener('change', onTypeChange);
+timeCheckin.addEventListener('change', onTimeCheckinChange);
+timeCheckout.addEventListener('change', onTimeCheckoutChange);
+roomsNumber.addEventListener('change', onRoomsNumberChange);
+guestsNumber.addEventListener('change', onGuestsNumberChange);
+formReset.addEventListener('click', function () {
+  map.classList.add('map--faded');
+  form.classList.add('ad-form--disabled');
+  pricePerNight.placeholder = "1000";
+  var popup = map.querySelector('.popup');
+  map.removeChild(popup);
+});
+formSubmit.addEventListener('click', onFormSubmitClick);
