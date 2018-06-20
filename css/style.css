@@ -194,6 +194,10 @@ fieldset {
   border-radius: 50%;
 }
 
+.map__pin  > img {
+  pointer-events: none;
+}
+
 .map__pin:not(.map__pin--main)::after {
   content: "";
   position: absolute;

@@ -16,14 +16,32 @@ var MIN_ROOMS = 1;
 var MAX_ROOMS = 5;
 var MIN_GUESTS = 1;
 var MAX_GUESTS = 5;
+var MAIN_MAP_PIN_HALF_WIDTH = Math.floor(65 / 2);
+var MAIN_MAP_PIN_HEIGHT = 62 + 22;
 var MAP_PIN_HALF_WIDTH = 50 / 2;
 var MAP_PIN_HEIGHT = 70;
+var START_MAIN_PIN_LEFT = 570;
+var START_MAIN_PIN_TOP = 375;
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
+var pointX;
+var pointY;
+var optionsList;
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
 var pinsElement = map.querySelector('.map__pins');
-var nextAfterAdsElement = map.querySelector('map__filters-container');
+var mapPinMuffin = map.querySelector('.map__pin--main');
+var nextAfterAdsElement = map.querySelector('.map__filters-container');
+var form = document.querySelector('.ad-form');
+var formReset = form.querySelector('.ad-form__reset');
+var formSubmit = form.querySelector('.ad-form__submit');
+var fieldsets = form.querySelectorAll('fieldset');
+var typeOfAccomodation = form.querySelector('#type');
+var pricePerNight = form.querySelector('#price');
+var timeCheckin = form.querySelector('#timein');
+var timeCheckout = form.querySelector('#timeout');
+var roomsNumber = form.querySelector('#room_number');
+var guestsNumber = form.querySelector('#capacity');
 var template = document.querySelector('template');
 var pinTemplate = template.content.querySelector('.map__pin');
 var adTemplate = template.content.querySelector('.map__card');
@@ -85,45 +103,6 @@ var makeFeaturesList = function (array) {
   return adFeatures;
 };
 
-var makeAdsList = function () {
-  var similarAds = [];
-  var shuffledNumbers = shuffleArray(NUMBERS_FOR_AVATARS);
-  var shuffledTitles = shuffleArray(TITLES);
-  var adTitle;
-  var pointX;
-  var pointY;
-  for (var i = 0; i < SIMILAR_ADS_QUANTITY; i++) {
-    adTitle = shuffledTitles[i];
-    pointX = getRandomNumber(MIN_X, MAX_X);
-    pointY = getRandomNumber(MIN_Y, MAX_Y);
-    similarAds[i] = {
-      author: {
-        avatar: 'img/avatars/user0' + shuffledNumbers[i] + '.png'
-      },
-
-      offer: {
-        title: adTitle,
-        address: pointX + ', ' + pointY,
-        price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: getAdType(adTitle),
-        rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
-        guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
-        checkin: getRandomElement(HOURS),
-        checkout: getRandomElement(HOURS),
-        features: makeFeaturesList(FEATURES),
-        description: '',
-        photos: shuffleArray(PHOTOS) // во всех объявлениях получается один и тот же порядок фото
-      },
-
-      location: {
-        x: pointX,
-        y: pointY
-      }
-    };
-  }
-  return similarAds;
-};
-
 var renderPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
   var mapPinTopLeftX = pin.location.x - MAP_PIN_HALF_WIDTH;
@@ -154,20 +133,58 @@ var renderAd = function (ad) {
   adElement.querySelector('.popup__title').textContent = ad.offer.title;
   adElement.querySelector('.popup__text--address').textContent = ad.offer.address;
   adElement.querySelector('.popup__text--price').textContent = ad.offer.price + '₽/ночь';
-  // в разметке тут 5200&#x20bd;<span>/ночь</span></p> - надо ли делать innerHTML и копировать спец символ и спан?
-  // в CSS есть .popup__price span {font-size: 16px;} но в html нет класса .popup__price только .popup__text--price
   adElement.querySelector('.popup__type').textContent = insertCorrectType(adType);
   adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-  // нужна ли тут проверка, чтобы менялись окончания? 1 комнаТА или 5 комнаТ для 1 гостЯ или для 2 гостЕЙ
   adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
   adElement.querySelector('.popup__features').textContent = ad.offer.features;
   adElement.querySelector('.popup__description').textContent = ad.offer.description;
   adElement.querySelector('.popup__avatar').src = ad.author.avatar;
   photoTemplate.src = ad.offer.photos[0];
-  // нужна ли тут проверка, чтобы следуюший шаг выполнялся только в том случае, если длина массива больше 1?
-  // Или это будет лишняя проверка по критериям?
   adElement.querySelector('.popup__photos').appendChild(renderPhotos(ad.offer.photos));
   return adElement;
+};
+
+var disableFieldsets = function () {
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].setAttribute('disabled', 'disabled');
+  }
+};
+
+var makeAdsList = function () {
+  var similarAds = [];
+  var shuffledNumbers = shuffleArray(NUMBERS_FOR_AVATARS);
+  var shuffledTitles = shuffleArray(TITLES);
+  var adTitle;
+  for (var i = 0; i < SIMILAR_ADS_QUANTITY; i++) {
+    adTitle = shuffledTitles[i];
+    pointX = getRandomNumber(MIN_X, MAX_X);
+    pointY = getRandomNumber(MIN_Y, MAX_Y);
+    similarAds[i] = {
+      author: {
+        avatar: 'img/avatars/user0' + shuffledNumbers[i] + '.png'
+      },
+
+      offer: {
+        title: adTitle,
+        address: pointX + ', ' + pointY,
+        price: getRandomNumber(MIN_PRICE, MAX_PRICE),
+        type: getAdType(adTitle),
+        rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
+        guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
+        checkin: getRandomElement(HOURS),
+        checkout: getRandomElement(HOURS),
+        features: makeFeaturesList(FEATURES),
+        description: '',
+        photos: shuffleArray(PHOTOS)
+      },
+
+      location: {
+        x: pointX,
+        y: pointY
+      }
+    };
+  }
+  return similarAds;
 };
 
 var renderPinsList = function (pins) {
@@ -178,12 +195,205 @@ var renderPinsList = function (pins) {
   pinsElement.appendChild(fragment);
 };
 
-var renderFirstAd = function (ads) {
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(renderAd(ads[0]));
-  map.insertBefore(fragment, nextAfterAdsElement);
+var makePageActive = function () {
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].removeAttribute('disabled');
+  }
 };
 
+var setAddress = function () {
+  pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_HALF_WIDTH;
+  pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_HEIGHT;
+  form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
+};
+
+var onMapPinClick = function (evt) {
+  var closePopup = function () {
+    map.removeChild(popup);
+    document.removeEventListener('keydown', onPopupEscPress);
+  };
+  var onPopupEscPress = function (eventObj) {
+    if (eventObj.keyCode === ESC_KEYCODE) {
+      closePopup();
+    }
+  };
+  var target = evt.target;
+  if (target.tagName !== 'BUTTON') {
+    return;
+  }
+  var alt = target.querySelector('img').alt;
+  for (var j = 0; j < adsList.length; j++) {
+    if (adsList[j].offer.title === alt) {
+      var currentAd = adsList[j];
+      var fragment = document.createDocumentFragment();
+      fragment.appendChild(renderAd(currentAd));
+      map.insertBefore(fragment, nextAfterAdsElement);
+      var popup = map.querySelector('.popup');
+      var popupClose = map.querySelector('.popup__close');
+      document.addEventListener('keydown', onPopupEscPress);
+      popupClose.addEventListener('click', function () {
+        closePopup();
+      });
+      popupClose.addEventListener('keydown', function (eventObject) {
+        if (eventObject.keyCode === ENTER_KEYCODE) {
+          closePopup();
+        }
+      });
+    }
+  }
+};
+
+var onTypeChange = function (evt) {
+  var target = evt.target;
+  var selectedType = target.value;
+  var setType = function () {
+    switch (selectedType) {
+      case 'bungalo':
+        return '0';
+      case 'house':
+        return '5000';
+      case 'palace':
+        return '10000';
+      default:
+        return '1000';
+    }
+  };
+  var setMinPrice = function () {
+    var minPrice = setType();
+    pricePerNight.min = minPrice;
+    pricePerNight.placeholder = minPrice;
+  };
+  setMinPrice();
+};
+
+var onTimeCheckinChange = function (evt) {
+  timeCheckout.value = evt.target.value;
+};
+
+var onTimeCheckoutChange = function (evt) {
+  timeCheckin.value = evt.target.value;
+};
+
+var bringAllOptionsBack = function () {
+  for (var i = 0; i < optionsList.length; i++) {
+    optionsList[i].classList.remove('hidden');
+  }
+};
+
+var onRoomsNumberChange = function (evt) {
+  var target = evt.target;
+  var selectedRoomsNumber = target.value;
+  var setGuestsNumber = function () {
+    if (selectedRoomsNumber === '2') {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[3].classList.add('hidden');
+    } else if (selectedRoomsNumber === '3') {
+      bringAllOptionsBack();
+      optionsList[3].classList.add('hidden');
+    } else if (selectedRoomsNumber === '100') {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[1].classList.add('hidden');
+      optionsList[2].classList.add('hidden');
+    } else {
+      bringAllOptionsBack();
+      optionsList[0].classList.add('hidden');
+      optionsList[1].classList.add('hidden');
+      optionsList[3].classList.add('hidden');
+    }
+  };
+  optionsList = guestsNumber.options;
+  setGuestsNumber();
+};
+
+var showErrorMessage = function (isGuestsNumberCorrect, availableGuestsNumber) {
+  if (!isGuestsNumberCorrect) {
+    guestsNumber.setCustomValidity('Выбранное количество комнат подходит только ' + availableGuestsNumber);
+  } else {
+    guestsNumber.setCustomValidity('');
+  }
+};
+
+var checkRoomsAndGuests = function () {
+  var selectedRoomsNumber = roomsNumber.value;
+  var selectedGuestsNumber = guestsNumber.value;
+  var isGuestsNumberCorrect;
+  var availableGuestsNumber;
+  switch (selectedRoomsNumber) {
+    case '1':
+      switch (selectedGuestsNumber) {
+        case '1':
+          isGuestsNumberCorrect = true;
+          break;
+        default:
+          isGuestsNumberCorrect = false;
+      }
+      availableGuestsNumber = 'для 1 гостя';
+      break;
+    case '2':
+      switch (selectedGuestsNumber) {
+        case '1':
+        case '2':
+          isGuestsNumberCorrect = true;
+          break;
+        default:
+          isGuestsNumberCorrect = false;
+      }
+      availableGuestsNumber = 'для 1 или 2 гостей';
+      break;
+    case '3':
+      switch (selectedGuestsNumber) {
+        case '1':
+        case '2':
+        case '3':
+          isGuestsNumberCorrect = true;
+          break;
+        default:
+          isGuestsNumberCorrect = false;
+      }
+      availableGuestsNumber = 'для 1, 2 или 3 гостей';
+      break;
+    case '100':
+      switch (selectedGuestsNumber) {
+        case '0':
+          isGuestsNumberCorrect = true;
+          break;
+        default:
+          isGuestsNumberCorrect = false;
+      }
+      availableGuestsNumber = 'не для гостей';
+  }
+  showErrorMessage(isGuestsNumberCorrect, availableGuestsNumber);
+};
+
+disableFieldsets();
 var adsList = makeAdsList();
-renderPinsList(adsList);
-renderFirstAd(adsList);
+
+mapPinMuffin.addEventListener('mouseup', function () {
+  makePageActive();
+  setAddress();
+  renderPinsList(adsList);
+});
+
+pinsElement.addEventListener('click', onMapPinClick);
+typeOfAccomodation.addEventListener('change', onTypeChange);
+timeCheckin.addEventListener('change', onTimeCheckinChange);
+timeCheckout.addEventListener('change', onTimeCheckoutChange);
+roomsNumber.addEventListener('change', onRoomsNumberChange);
+guestsNumber.addEventListener('change', checkRoomsAndGuests);
+formSubmit.addEventListener('click', checkRoomsAndGuests);
+formReset.addEventListener('click', function () {
+  map.classList.add('map--faded');
+  form.classList.add('ad-form--disabled');
+  pricePerNight.placeholder = '1000';
+  var popup = map.querySelector('.popup');
+  if (popup) {
+    map.removeChild(popup);
+  }
+  Array.from(pinsElement.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
+    pin.remove();
+  });
+});
