@@ -392,7 +392,7 @@ formReset.addEventListener('click', function () {
   if (popup) {
     map.removeChild(popup);
   }
-  Array.from(pinsElement.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function(pin) {
+  Array.from(pinsElement.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
     pin.remove();
   });
 });
