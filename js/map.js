@@ -282,8 +282,6 @@ var bringAllOptionsBack = function () {
 };
 
 var onRoomsNumberChange = function (evt) {
-  // проблема в том, что если выбираешь, например, 100 комнат, а потом Не для гостей, то уже никак
-  // без перезагрузки страницы или нажатия на Очистить нельзя выбрать другие варианты
   var target = evt.target;
   var selectedRoomsNumber = target.value;
   var setGuestsNumber = function () {
@@ -310,37 +308,19 @@ var onRoomsNumberChange = function (evt) {
   setGuestsNumber();
 };
 
-var onGuestsNumberChange = function (evt) {
-  var target = evt.target;
-  var selectedGuestsNumber = target.value;
-  var setRoomsNumber = function () {
-    if (selectedGuestsNumber === '2') {
-      bringAllOptionsBack();
-      optionsList[0].classList.add('hidden');
-      optionsList[3].classList.add('hidden');
-    } else if (selectedGuestsNumber === '1') {
-      bringAllOptionsBack();
-      optionsList[3].classList.add('hidden');
-    } else if (selectedGuestsNumber === '0') {
-      bringAllOptionsBack();
-      optionsList[0].classList.add('hidden');
-      optionsList[1].classList.add('hidden');
-      optionsList[2].classList.add('hidden');
-    } else {
-      bringAllOptionsBack();
-      optionsList[0].classList.add('hidden');
-      optionsList[1].classList.add('hidden');
-      optionsList[3].classList.add('hidden');
-    }
-  };
-  optionsList = roomsNumber.options;
-  setRoomsNumber();
+var showErrorMessage = function (isGuestsNumberCorrect, availableGuestsNumber) {
+  if (!isGuestsNumberCorrect) {
+    guestsNumber.setCustomValidity('Выбранное количество комнат подходит только ' + availableGuestsNumber);
+  } else {
+    guestsNumber.setCustomValidity('');
+  }
 };
 
-var onFormSubmitClick = function () {
+var checkRoomsAndGuests = function () {
   var selectedRoomsNumber = roomsNumber.value;
   var selectedGuestsNumber = guestsNumber.value;
   var isGuestsNumberCorrect;
+  var availableGuestsNumber;
   switch (selectedRoomsNumber) {
     case '1':
       switch (selectedGuestsNumber) {
@@ -350,6 +330,7 @@ var onFormSubmitClick = function () {
         default:
           isGuestsNumberCorrect = false;
       }
+      availableGuestsNumber = 'для 1 гостя';
       break;
     case '2':
       switch (selectedGuestsNumber) {
@@ -360,6 +341,7 @@ var onFormSubmitClick = function () {
         default:
           isGuestsNumberCorrect = false;
       }
+      availableGuestsNumber = 'для 1 или 2 гостей';
       break;
     case '3':
       switch (selectedGuestsNumber) {
@@ -371,6 +353,7 @@ var onFormSubmitClick = function () {
         default:
           isGuestsNumberCorrect = false;
       }
+      availableGuestsNumber = 'для 1, 2 или 3 гостей';
       break;
     case '100':
       switch (selectedGuestsNumber) {
@@ -380,12 +363,9 @@ var onFormSubmitClick = function () {
         default:
           isGuestsNumberCorrect = false;
       }
+      availableGuestsNumber = 'не для гостей';
   }
-  if (!isGuestsNumberCorrect) {
-    guestsNumber.setCustomValidity('Пожалуйста, выберите подходящее количество гостей из списка.');
-  } else {
-    guestsNumber.setCustomValidity('');
-  }
+  showErrorMessage(isGuestsNumberCorrect, availableGuestsNumber);
 };
 
 disableFieldsets();
@@ -402,12 +382,17 @@ typeOfAccomodation.addEventListener('change', onTypeChange);
 timeCheckin.addEventListener('change', onTimeCheckinChange);
 timeCheckout.addEventListener('change', onTimeCheckoutChange);
 roomsNumber.addEventListener('change', onRoomsNumberChange);
-guestsNumber.addEventListener('change', onGuestsNumberChange);
+guestsNumber.addEventListener('change', checkRoomsAndGuests);
+formSubmit.addEventListener('click', checkRoomsAndGuests);
 formReset.addEventListener('click', function () {
   map.classList.add('map--faded');
   form.classList.add('ad-form--disabled');
   pricePerNight.placeholder = '1000';
   var popup = map.querySelector('.popup');
-  map.removeChild(popup);
+  if (popup) {
+    map.removeChild(popup);
+  }
+  Array.from(pinsElement.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function(pin) {
+    pin.remove();
+  });
 });
-formSubmit.addEventListener('click', onFormSubmitClick);
