@@ -376,7 +376,7 @@ mapPinMuffin.addEventListener('mouseup', function () {
   makePageActive();
   setAddress();
   renderPinsList(adsList);
-})
+});
 
 pinsElement.addEventListener('click', onMapPinClick);
 typeOfAccomodation.addEventListener('change', onTypeChange);
