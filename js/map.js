@@ -16,8 +16,12 @@ var MIN_ROOMS = 1;
 var MAX_ROOMS = 5;
 var MIN_GUESTS = 1;
 var MAX_GUESTS = 5;
+var MAIN_MAP_PIN_HALF_WIDTH = Math.floor(65 / 2);
+var MAIN_MAP_PIN_HEIGHT = 62 + 22;
 var MAP_PIN_HALF_WIDTH = 50 / 2;
 var MAP_PIN_HEIGHT = 70;
+var START_MAIN_PIN_LEFT = 570;
+var START_MAIN_PIN_TOP = 375;
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
@@ -200,12 +204,9 @@ var makePageActive = function () {
 };
 
 var setAddress = function () {
-  pointX = getRandomNumber(MIN_X, MAX_X); // позже надо заменить
-  pointY = getRandomNumber(MIN_Y, MAX_Y); // позже надо заменить
+  pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_HALF_WIDTH;
+  pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_HEIGHT;
   form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
-  // размер метки (квадрат) 62*62 + острый конец 10*22. То есть высота метки 84 а ширина или 62 или 65 (ширина button)
-  // Также непонятно, откуда будут браться координаты острого конца метки после перетаскивания, где они будут записаны.
-  // И где надо прописывать ограничения для X и Y
 };
 
 var onMapPinClick = function (evt) {
