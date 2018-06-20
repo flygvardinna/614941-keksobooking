@@ -220,7 +220,7 @@ var onMapPinClick = function (evt) {
     }
   };
   var target = evt.target;
-  if (target.tagName !== 'BUTTON' || target.classList.contains('map__pin--main')) {
+  if (target.tagName !== 'BUTTON') {
     return;
   }
   var alt = target.querySelector('img').alt;
