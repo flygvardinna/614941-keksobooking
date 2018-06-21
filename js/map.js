@@ -410,7 +410,7 @@ mainMapPin.addEventListener('mousedown', function (evt) {
     setAddress();
   };
 
-  var onMouseUp = function (upEvt) {
+  var onMouseUp = function () {
     makePageActive();
     setAddress();
     renderPinsList(adsList);
