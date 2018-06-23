@@ -365,6 +365,27 @@ var checkRoomsAndGuests = function () {
   showErrorMessage(isGuestsNumberCorrect, availableGuestsNumber);
 };
 
+var onGuestsNumberChange = function () {
+  checkRoomsAndGuests();
+};
+
+var onFormSubmitClick = function () {
+  checkRoomsAndGuests();
+};
+
+var onFormResetClick = function () {
+  map.classList.add('map--faded');
+  form.classList.add('ad-form--disabled');
+  pricePerNight.placeholder = '1000';
+  var popup = map.querySelector('.popup');
+  if (popup) {
+    map.removeChild(popup);
+  }
+  Array.from(pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
+    pin.remove();
+  });
+};
+
 var setAddress = function () {
   address.value = pointX + ', ' + pointY;
 };
@@ -428,17 +449,6 @@ typeOfAccomodation.addEventListener('change', onTypeChange);
 timeCheckin.addEventListener('change', onTimeCheckinChange);
 timeCheckout.addEventListener('change', onTimeCheckoutChange);
 roomsNumber.addEventListener('change', onRoomsNumberChange);
-guestsNumber.addEventListener('change', checkRoomsAndGuests); // Д24. Для каждого события используется отдельный обработчик
-formSubmit.addEventListener('click', checkRoomsAndGuests); // Д24. Для каждого события используется отдельный обработчик
-formReset.addEventListener('click', function () {
-  map.classList.add('map--faded');
-  form.classList.add('ad-form--disabled');
-  pricePerNight.placeholder = '1000';
-  var popup = map.querySelector('.popup');
-  if (popup) {
-    map.removeChild(popup);
-  }
-  Array.from(pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
-    pin.remove();
-  });
-});
+guestsNumber.addEventListener('change', onGuestsNumberChange);
+formSubmit.addEventListener('click', onFormSubmitClick);
+formReset.addEventListener('click', onFormResetClick);
