@@ -17,7 +17,8 @@ var MAX_ROOMS = 5;
 var MIN_GUESTS = 1;
 var MAX_GUESTS = 5;
 var MAIN_MAP_PIN_HALF_WIDTH = Math.floor(65 / 2);
-var MAIN_MAP_PIN_HEIGHT = 62 + 22;
+var MAIN_MAP_PIN_DISABLED_MIDDLE = Math.floor(65 / 2);
+var MAIN_MAP_PIN_HEIGHT = 65 + 22;
 var MAP_PIN_HALF_WIDTH = 50 / 2;
 var MAP_PIN_HEIGHT = 70;
 var START_MAIN_PIN_LEFT = 570;
@@ -25,18 +26,19 @@ var START_MAIN_PIN_TOP = 375;
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
-var pointX;
-var pointY;
 var optionsList;
+var pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_DISABLED_MIDDLE;
+var pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_DISABLED_MIDDLE;
 var map = document.querySelector('.map');
-var pinsElement = map.querySelector('.map__pins');
-var mapPinMuffin = map.querySelector('.map__pin--main');
-var nextAfterAdsElement = map.querySelector('.map__filters-container');
+var pinsContainer = map.querySelector('.map__pins');
+var mainMapPin = map.querySelector('.map__pin--main');
+var filtersContainer = map.querySelector('.map__filters-container');
 var form = document.querySelector('.ad-form');
 var formReset = form.querySelector('.ad-form__reset');
 var formSubmit = form.querySelector('.ad-form__submit');
 var fieldsets = form.querySelectorAll('fieldset');
 var typeOfAccomodation = form.querySelector('#type');
+var address = form.querySelector('#address');
 var pricePerNight = form.querySelector('#price');
 var timeCheckin = form.querySelector('#timein');
 var timeCheckout = form.querySelector('#timeout');
@@ -157,8 +159,8 @@ var makeAdsList = function () {
   var adTitle;
   for (var i = 0; i < SIMILAR_ADS_QUANTITY; i++) {
     adTitle = shuffledTitles[i];
-    pointX = getRandomNumber(MIN_X, MAX_X);
-    pointY = getRandomNumber(MIN_Y, MAX_Y);
+    var smallPinPointX = getRandomNumber(MIN_X, MAX_X);
+    var smallPinPointY = getRandomNumber(MIN_Y, MAX_Y);
     similarAds[i] = {
       author: {
         avatar: 'img/avatars/user0' + shuffledNumbers[i] + '.png'
@@ -166,7 +168,7 @@ var makeAdsList = function () {
 
       offer: {
         title: adTitle,
-        address: pointX + ', ' + pointY,
+        address: smallPinPointX + ', ' + smallPinPointY,
         price: getRandomNumber(MIN_PRICE, MAX_PRICE),
         type: getAdType(adTitle),
         rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
@@ -179,8 +181,8 @@ var makeAdsList = function () {
       },
 
       location: {
-        x: pointX,
-        y: pointY
+        x: smallPinPointX,
+        y: smallPinPointY
       }
     };
   }
@@ -192,7 +194,7 @@ var renderPinsList = function (pins) {
   for (var i = 0; i < pins.length; i++) {
     fragment.appendChild(renderPin(pins[i]));
   }
-  pinsElement.appendChild(fragment);
+  pinsContainer.appendChild(fragment);
 };
 
 var makePageActive = function () {
@@ -201,12 +203,6 @@ var makePageActive = function () {
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].removeAttribute('disabled');
   }
-};
-
-var setAddress = function () {
-  pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_HALF_WIDTH;
-  pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_HEIGHT;
-  form.querySelector('input[name=address]').value = pointX + ', ' + pointY;
 };
 
 var onMapPinClick = function (evt) {
@@ -229,7 +225,7 @@ var onMapPinClick = function (evt) {
       var currentAd = adsList[j];
       var fragment = document.createDocumentFragment();
       fragment.appendChild(renderAd(currentAd));
-      map.insertBefore(fragment, nextAfterAdsElement);
+      map.insertBefore(fragment, filtersContainer);
       var popup = map.querySelector('.popup');
       var popupClose = map.querySelector('.popup__close');
       document.addEventListener('keydown', onPopupEscPress);
@@ -369,23 +365,15 @@ var checkRoomsAndGuests = function () {
   showErrorMessage(isGuestsNumberCorrect, availableGuestsNumber);
 };
 
-disableFieldsets();
-var adsList = makeAdsList();
+var onGuestsNumberChange = function () {
+  checkRoomsAndGuests();
+};
 
-mapPinMuffin.addEventListener('mouseup', function () {
-  makePageActive();
-  setAddress();
-  renderPinsList(adsList);
-});
+var onFormSubmitClick = function () {
+  checkRoomsAndGuests();
+};
 
-pinsElement.addEventListener('click', onMapPinClick);
-typeOfAccomodation.addEventListener('change', onTypeChange);
-timeCheckin.addEventListener('change', onTimeCheckinChange);
-timeCheckout.addEventListener('change', onTimeCheckoutChange);
-roomsNumber.addEventListener('change', onRoomsNumberChange);
-guestsNumber.addEventListener('change', checkRoomsAndGuests);
-formSubmit.addEventListener('click', checkRoomsAndGuests);
-formReset.addEventListener('click', function () {
+var onFormResetClick = function () {
   map.classList.add('map--faded');
   form.classList.add('ad-form--disabled');
   pricePerNight.placeholder = '1000';
@@ -393,7 +381,74 @@ formReset.addEventListener('click', function () {
   if (popup) {
     map.removeChild(popup);
   }
-  Array.from(pinsElement.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
+  Array.from(pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
     pin.remove();
   });
+};
+
+var setAddress = function () {
+  address.value = pointX + ', ' + pointY;
+};
+
+disableFieldsets();
+var adsList = makeAdsList();
+setAddress();
+
+mainMapPin.addEventListener('mousedown', function (evt) {
+  var startPoints = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    var minMainPinTop = MIN_Y - MAIN_MAP_PIN_HEIGHT;
+    var maxMainPinTop = MAX_Y - MAIN_MAP_PIN_HEIGHT;
+
+    var shift = {
+      x: startPoints.x - moveEvt.clientX,
+      y: startPoints.y - moveEvt.clientY
+    };
+
+    startPoints = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var mainPinLeft = mainMapPin.offsetLeft - shift.x;
+    var mainPinTop = mainMapPin.offsetTop - shift.y;
+
+    if (mainPinTop < minMainPinTop) {
+      mainPinTop = minMainPinTop;
+    } else if (mainPinTop > maxMainPinTop) {
+      mainPinTop = maxMainPinTop;
+    }
+
+    mainMapPin.style.left = mainPinLeft + 'px';
+    mainMapPin.style.top = mainPinTop + 'px';
+
+    pointX = mainPinLeft + MAIN_MAP_PIN_HALF_WIDTH;
+    pointY = mainPinTop + MAIN_MAP_PIN_HEIGHT;
+    setAddress();
+  };
+
+  var onMouseUp = function () {
+    makePageActive();
+    setAddress();
+    renderPinsList(adsList);
+
+    pinsContainer.removeEventListener('mousemove', onMouseMove);
+    pinsContainer.removeEventListener('mouseup', onMouseUp);
+  };
+
+  pinsContainer.addEventListener('mousemove', onMouseMove);
+  pinsContainer.addEventListener('mouseup', onMouseUp);
 });
+
+pinsContainer.addEventListener('click', onMapPinClick);
+typeOfAccomodation.addEventListener('change', onTypeChange);
+timeCheckin.addEventListener('change', onTimeCheckinChange);
+timeCheckout.addEventListener('change', onTimeCheckoutChange);
+roomsNumber.addEventListener('change', onRoomsNumberChange);
+guestsNumber.addEventListener('change', onGuestsNumberChange);
+formSubmit.addEventListener('click', onFormSubmitClick);
+formReset.addEventListener('click', onFormResetClick);

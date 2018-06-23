@@ -192,9 +192,7 @@ fieldset {
   margin: auto;
 
   border-radius: 50%;
-}
 
-.map__pin  > img {
   pointer-events: none;
 }
 
@@ -266,6 +264,8 @@ fieldset {
 
   width: 156px;
   height: 156px;
+
+  pointer-events: none;
 
   -webkit-transition: -webkit-transform 300ms ease-in;
 
