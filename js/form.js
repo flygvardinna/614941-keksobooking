@@ -25,7 +25,7 @@
   var timeCheckout = form.querySelector('#timeout');
   var roomsNumber = form.querySelector('#room_number');
   var guestsNumber = form.querySelector('#capacity');
-  var description =  form.querySelector('#description');
+  var description = form.querySelector('#description');
   var features = form.querySelector('.features');
 
   var disableFieldsets = function () {
@@ -192,9 +192,9 @@
     });
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
     mainMapPin.style.top = START_MAIN_PIN_TOP + 'px';
-    title.value = "";
+    title.value = '';
     address.value = startAddress;
-    type.value = "flat";
+    type.value = 'flat';
     price.value = '';
     price.placeholder = '1000';
     timeCheckin.value = '12:00';
