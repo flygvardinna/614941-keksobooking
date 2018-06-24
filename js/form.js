@@ -193,7 +193,7 @@
     });
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
     mainMapPin.style.top = START_MAIN_PIN_TOP + 'px';
-    //disableFieldsets();
+    // disableFieldsets();
   };
 
   var onMainMapPinMousedown = function (evt) {
