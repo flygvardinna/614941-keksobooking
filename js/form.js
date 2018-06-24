@@ -17,13 +17,16 @@
   var formReset = form.querySelector('.ad-form__reset');
   var formSubmit = form.querySelector('.ad-form__submit');
   var fieldsets = form.querySelectorAll('fieldset');
-  var typeOfAccomodation = form.querySelector('#type');
+  var title = form.querySelector('#title');
   var address = form.querySelector('#address');
-  var pricePerNight = form.querySelector('#price');
+  var type = form.querySelector('#type');
+  var price = form.querySelector('#price');
   var timeCheckin = form.querySelector('#timein');
   var timeCheckout = form.querySelector('#timeout');
   var roomsNumber = form.querySelector('#room_number');
   var guestsNumber = form.querySelector('#capacity');
+  var description =  form.querySelector('#description');
+  var features = form.querySelector('.features');
 
   var disableFieldsets = function () {
     for (var i = 0; i < fieldsets.length; i++) {
@@ -61,8 +64,8 @@
     };
     var setMinPrice = function () {
       var minPrice = setType();
-      pricePerNight.min = minPrice;
-      pricePerNight.placeholder = minPrice;
+      price.min = minPrice;
+      price.placeholder = minPrice;
     };
     setMinPrice();
   };
@@ -180,10 +183,6 @@
   var onFormResetClick = function () {
     window.blocks.map.classList.add('map--faded');
     form.classList.add('ad-form--disabled');
-    pricePerNight.placeholder = '1000';
-    address.value = startAddress; // в debugger видно, что это работает и адрес устанавливается верный,
-    // но сразу после завершения функции он исчезает. Если в конце функции вызвать disableFieldsets, то адрес остается,
-    // но тогда все остальные значения полей тоже не сбрасываются.
     var popup = window.blocks.map.querySelector('.popup');
     if (popup) {
       window.blocks.map.removeChild(popup);
@@ -193,7 +192,20 @@
     });
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
     mainMapPin.style.top = START_MAIN_PIN_TOP + 'px';
-    // disableFieldsets();
+    title.value = "";
+    address.value = startAddress;
+    type.value = "flat";
+    price.value = '';
+    price.placeholder = '1000';
+    timeCheckin.value = '12:00';
+    timeCheckout.value = '12:00';
+    roomsNumber.value = '1';
+    guestsNumber.value = '1';
+    description.value = '';
+    Array.from(features.querySelectorAll('.feature__checkbox')).forEach(function (feature) {
+      feature.checked = false;
+    });
+    disableFieldsets();
   };
 
   var onMainMapPinMousedown = function (evt) {
@@ -247,7 +259,7 @@
   };
 
   mainMapPin.addEventListener('mousedown', onMainMapPinMousedown);
-  typeOfAccomodation.addEventListener('change', onTypeChange);
+  type.addEventListener('change', onTypeChange);
   timeCheckin.addEventListener('change', onTimeCheckinChange);
   timeCheckout.addEventListener('change', onTimeCheckoutChange);
   roomsNumber.addEventListener('change', onRoomsNumberChange);
