@@ -176,12 +176,14 @@
     checkRoomsAndGuests();
   };
 
+
   var onFormResetClick = function () {
     window.blocks.map.classList.add('map--faded');
     form.classList.add('ad-form--disabled');
     pricePerNight.placeholder = '1000';
-    address.value = startAddress; // в debugger видно, что работает и адрес устанавливается верный,
-    // но сразу после завершения функции он исчезает
+    address.value = startAddress; // в debugger видно, что это работает и адрес устанавливается верный,
+    // но сразу после завершения функции он исчезает. Если в конце функции вызвать disableFieldsets, то адрес остается,
+    // но тогда все остальные значения полей тоже не сбрасываются.
     var popup = window.blocks.map.querySelector('.popup');
     if (popup) {
       window.blocks.map.removeChild(popup);
@@ -191,6 +193,7 @@
     });
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
     mainMapPin.style.top = START_MAIN_PIN_TOP + 'px';
+    //disableFieldsets();
   };
 
   var onMainMapPinMousedown = function (evt) {
