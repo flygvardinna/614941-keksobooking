@@ -180,8 +180,8 @@
     window.blocks.map.classList.add('map--faded');
     form.classList.add('ad-form--disabled');
     pricePerNight.placeholder = '1000';
-    address.value = startAddress; //в debugger видно, что работает и адрес устанавливается верный,
-    //но сразу после завершения функции он исчезает
+    address.value = startAddress; // в debugger видно, что работает и адрес устанавливается верный,
+    // но сразу после завершения функции он исчезает
     var popup = window.blocks.map.querySelector('.popup');
     if (popup) {
       window.blocks.map.removeChild(popup);
