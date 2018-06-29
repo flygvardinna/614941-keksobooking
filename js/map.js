@@ -4,6 +4,15 @@
   var ESC_KEYCODE = 27;
 
   var filtersContainer = document.querySelector('.map__filters-container');
+  var filters = filtersContainer.querySelectorAll('.map__filter');
+  var feautures = filtersContainer.querySelector('.map__features');
+
+  var disableFilters = function () {
+    Array.from(filters).forEach(function (filter) {
+      filter.removeAttribute('disabled');
+    });
+    features.removeAttribute('disabled');
+  };
 
   window.map = {
     onLoad: function (pins) {
@@ -13,6 +22,8 @@
         fragment.appendChild(window.renderPin(pins[i]));
       }
       window.blocks.pinsContainer.appendChild(fragment);
+      filtersContainer.classList.remove('map__filters-container--disabled');
+      disableFilters();
     },
     onError: function (errorMessage) {
       var node = document.createElement('div');

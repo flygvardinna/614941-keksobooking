@@ -346,6 +346,10 @@ fieldset {
   background-color: rgba(3, 28, 45, 0.5);
 }
 
+.map__filters-container--disabled {
+  pointer-events: none;
+}
+
 .map__filters {
   display: -webkit-box;
   display: -ms-flexbox;
