@@ -2,16 +2,29 @@
 
 (function () {
   var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
 
   var filtersContainer = document.querySelector('.map__filters-container');
 
-  window.renderPinsList = function (pins) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < pins.length; i++) {
-      fragment.appendChild(window.renderPin(pins[i]));
+  window.map = {
+    onLoad: function (pins) {
+      window.adsList = pins;
+      var fragment = document.createDocumentFragment();
+      for (var i = 0; i < pins.length; i++) {
+        fragment.appendChild(window.renderPin(pins[i]));
+      }
+      window.blocks.pinsContainer.appendChild(fragment);
+    },
+    onError: function (errorMessage) {
+      var node = document.createElement('div');
+      node.style = 'z-index: 100; margin: 0 auto; text-align: center; font-family: "Roboto", "Arial", sans-serif; color: white; background-color: #ff6d51';
+      node.style.position = 'absolute';
+      node.style.left = 0;
+      node.style.right = 0;
+      node.style.fontSize = '25px';
+
+      node.textContent = errorMessage;
+      document.body.insertAdjacentElement('afterbegin', node);
     }
-    window.blocks.pinsContainer.appendChild(fragment);
   };
 
   var onMapPinClick = function (evt) {
@@ -25,26 +38,29 @@
       }
     };
     var target = evt.target;
-    if (target.tagName !== 'BUTTON') {
+    if (target.tagName !== 'BUTTON' || target.classList.contains('map__pin--main')) {
       return;
     }
+    var activePin = window.blocks.pinsContainer.querySelector('.map__pin--active');
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
+    }
+    evt.target.classList.add('map__pin--active');
     var alt = target.querySelector('img').alt;
+    var popup = window.blocks.map.querySelector('.popup');
+    if (popup) {
+      closePopup();
+    }
     for (var j = 0; j < window.adsList.length; j++) {
       if (window.adsList[j].offer.title === alt) {
         var currentAd = window.adsList[j];
         var fragment = document.createDocumentFragment();
-        fragment.appendChild(window.renderAd(currentAd));
+        popup = fragment.appendChild(window.renderAd(currentAd));
         window.blocks.map.insertBefore(fragment, filtersContainer);
-        var popup = window.blocks.map.querySelector('.popup');
         var popupClose = popup.querySelector('.popup__close');
         document.addEventListener('keydown', onPopupEscPress);
         popupClose.addEventListener('click', function () {
           closePopup();
-        });
-        popupClose.addEventListener('keydown', function (eventObject) {
-          if (eventObject.keyCode === ENTER_KEYCODE) {
-            closePopup();
-          }
         });
       }
     }
