@@ -5,7 +5,7 @@
 
   var filtersContainer = document.querySelector('.map__filters-container');
   var filters = filtersContainer.querySelectorAll('.map__filter');
-  var feautures = filtersContainer.querySelector('.map__features');
+  var features = filtersContainer.querySelector('.map__features');
 
   var disableFilters = function () {
     Array.from(filters).forEach(function (filter) {
