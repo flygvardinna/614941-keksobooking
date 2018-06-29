@@ -5,7 +5,7 @@
 
   window.backend = {
     load: function (onLoad, onError) {
-      var message = 'Похожие объявления не загрузились. '
+      var message = 'Похожие объявления не загрузились. ';
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
@@ -29,7 +29,7 @@
       xhr.send();
     },
     upload: function (data, onLoad, onError) {
-      var message = 'Ваше объявление не отправлено. '
+      var message = 'Ваше объявление не отправлено. ';
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 

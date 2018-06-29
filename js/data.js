@@ -98,4 +98,6 @@
     }
     return similarAds;
   };
+
+  //window.adsList = makeAdsList();
 })();

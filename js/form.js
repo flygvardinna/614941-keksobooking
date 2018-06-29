@@ -16,7 +16,6 @@
   var mainMapPin = window.blocks.map.querySelector('.map__pin--main');
   var form = document.querySelector('.ad-form');
   var formReset = form.querySelector('.ad-form__reset');
-  var formSubmit = form.querySelector('.ad-form__submit');
   var formSuccess = document.querySelector('.success');
   var fieldsets = form.querySelectorAll('fieldset');
   var title = form.querySelector('#title');
