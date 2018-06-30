@@ -26,7 +26,6 @@
   var selectedPrice;
   var selectedRoomsNumber;
   var selectedGuestsNumber;
-  var pinsList = [];
   var popup = window.blocks.map.querySelector('.popup');
 
   window.map = {
@@ -67,7 +66,6 @@
       fragment.appendChild(window.renderPin(pins[i]));
     }
     window.blocks.pinsContainer.appendChild(fragment);
-    //console.log(pins);
   };
 
   var getRank = function (pin) {
@@ -146,7 +144,7 @@
     };
     var onPopupEscPress = function (eventObj) {
       if (eventObj.keyCode === ESC_KEYCODE) {
-        closePopup();
+        window.closePopup();
       }
     };
     var target = evt.target;
@@ -159,7 +157,7 @@
     }
     evt.target.classList.add('map__pin--active');
     var alt = target.querySelector('img').alt;
-    closePopup();
+    window.closePopup();
     for (var j = 0; j < window.pinsList.length; j++) {
       if (window.pinsList[j].offer.title === alt) {
         var currentAd = window.pinsList[j];
@@ -169,17 +167,11 @@
         var popupClose = popup.querySelector('.popup__close');
         document.addEventListener('keydown', onPopupEscPress);
         popupClose.addEventListener('click', function () {
-          closePopup();
+          window.closePopup();
         });
       }
     }
   };
-
-  /*var closePopupIfOpened = function () {
-    if (popup) {
-      window.closePopup();
-    }
-  };*/
 
   var onTypeFilterChange = function (evt) {
     selectedType = evt.target.value;
