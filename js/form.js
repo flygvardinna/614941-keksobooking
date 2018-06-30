@@ -185,9 +185,7 @@
     if (popup) {
       window.blocks.map.removeChild(popup);
     }
-    Array.from(window.blocks.pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
-      pin.remove();
-    });
+    window.map.removePins();
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
     mainMapPin.style.top = START_MAIN_PIN_TOP + 'px';
     title.value = '';
