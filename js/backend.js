@@ -19,7 +19,6 @@
           onLoad(xhr.response);
         } else {
           onError(MESSAGE_LOAD + MESSAGE_UNSUCCESS + xhr.status + ' ' + xhr.statusText);
-          console.log(xhr.statusText);
         }
       });
       xhr.addEventListener('error', function () {
