@@ -2,6 +2,14 @@
 
 (function () {
   var adTemplate = window.blocks.template.content.querySelector('.map__card');
+  var ClassToFeature = {
+    'wifi': 'popup__feature--wifi',
+    'dishwasher': 'popup__feature--dishwasher',
+    'parking': 'popup__feature--parking',
+    'washer': 'popup__feature--washer',
+    'elevator': 'popup__feature--elevator',
+    'conditioner': 'popup__feature--conditioner'
+  };
 
   var insertCorrectType = function (type) {
     switch (type) {
@@ -18,6 +26,7 @@
 
   window.renderAd = function (ad) {
     var adCard = adTemplate.cloneNode(true);
+    var featuresList = adCard.querySelector('.popup__features');
     var photoTemplate = adCard.querySelector('.popup__photo');
     var adType = ad.offer.type;
 
@@ -31,13 +40,21 @@
       return fragment;
     };
 
+    var setFeatures = function () {
+      var features = '';
+      ad.offer.features.forEach(function (feature) {
+        features += '<li class="popup__feature ' + ClassToFeature[feature] + '"></li>';
+      });
+      return features;
+    };
+
     adCard.querySelector('.popup__title').textContent = ad.offer.title;
     adCard.querySelector('.popup__text--address').textContent = ad.offer.address;
     adCard.querySelector('.popup__text--price').textContent = ad.offer.price + '₽/ночь';
     adCard.querySelector('.popup__type').textContent = insertCorrectType(adType);
     adCard.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
     adCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
-    adCard.querySelector('.popup__features').textContent = ad.offer.features;
+    featuresList.innerHTML = setFeatures();
     adCard.querySelector('.popup__description').textContent = ad.offer.description;
     adCard.querySelector('.popup__avatar').src = ad.author.avatar;
     photoTemplate.src = ad.offer.photos[0];
