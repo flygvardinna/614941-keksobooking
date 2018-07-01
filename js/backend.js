@@ -2,10 +2,15 @@
 
 (function () {
   var URL = 'https://js.dump.academy/keksobooking';
+  var MESSAGE_LOAD = 'Похожие объявления не загрузились. ';
+  var MESSAGE_UPLOAD = 'Ваше объявление не отправлено. ';
+  var MESSAGE_UNSUCCESS = 'Статус ответа: ';
+  var MESSAGE_ERROR = 'Произошла ошибка соединения';
+  var MESSAGE_TIMEOUT = 'Запрос не успел выполниться за ';
+  var TIME = 'мс';
 
   window.backend = {
     load: function (onLoad, onError) {
-      var message = 'Похожие объявления не загрузились. ';
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
@@ -13,14 +18,15 @@
         if (xhr.status === 200) {
           onLoad(xhr.response);
         } else {
-          onError(message + 'Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+          onError(MESSAGE_LOAD + MESSAGE_UNSUCCESS + xhr.status + ' ' + xhr.statusText);
+          console.log(xhr.statusText);
         }
       });
       xhr.addEventListener('error', function () {
-        onError(message + 'Произошла ошибка соединения');
+        onError(MESSAGE_LOAD + MESSAGE_ERROR);
       });
       xhr.addEventListener('timeout', function () {
-        onError(message + 'Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+        onError(MESSAGE_LOAD + MESSAGE_TIMEOUT + xhr.timeout + TIME);
       });
 
       xhr.timeout = 10000;
@@ -29,7 +35,6 @@
       xhr.send();
     },
     upload: function (data, onLoad, onError) {
-      var message = 'Ваше объявление не отправлено. ';
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
@@ -37,14 +42,14 @@
         if (xhr.status === 200) {
           onLoad(xhr.response);
         } else {
-          onError(message + 'Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+          onError(MESSAGE_UPLOAD + MESSAGE_UNSUCCESS + xhr.status + ' ' + xhr.statusText);
         }
       });
       xhr.addEventListener('error', function () {
-        onError(message + 'Произошла ошибка соединения');
+        onError(MESSAGE_UPLOAD + MESSAGE_ERROR);
       });
       xhr.addEventListener('timeout', function () {
-        onError(message + 'Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+        onError(MESSAGE_UPLOAD + MESSAGE_TIMEOUT + xhr.timeout + TIME);
       });
 
       xhr.timeout = 10000;

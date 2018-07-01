@@ -2,7 +2,7 @@
 
 (function () {
   var adTemplate = window.blocks.template.content.querySelector('.map__card');
-  var classToFeature = {
+  var ClassToFeature = {
     'wifi': 'popup__feature--wifi',
     'dishwasher': 'popup__feature--dishwasher',
     'parking': 'popup__feature--parking',
@@ -42,9 +42,9 @@
 
     var setFeatures = function () {
       var features = '';
-      for (var k = 0; k < ad.offer.features.length; k++) {
-        features += '<li class="popup__feature ' + classToFeature[ad.offer.features[k]] + '"></li>';
-      }
+      ad.offer.features.forEach(function (feature) {
+        features += '<li class="popup__feature ' + ClassToFeature[feature] + '"></li>';
+      });
       return features;
     };
 
