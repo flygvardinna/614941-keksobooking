@@ -2,7 +2,6 @@
 
 (function () {
   var MAX_PINS_QUANTITY = 5;
-  var ESC_KEYCODE = 27;
 
   var filtersContainer = document.querySelector('.map__filters-container');
   var filters = filtersContainer.querySelectorAll('.map__filter');
@@ -12,7 +11,7 @@
   window.map = {
     onLoad: function (pins) {
       window.pinsList = pins;
-      renderPinsList(pins);
+      window.map.renderPinsList(pins);
       filtersContainer.classList.remove('map__filters-container--disabled');
       disableFilters();
     },
@@ -26,6 +25,15 @@
 
       node.textContent = errorMessage;
       document.body.insertAdjacentElement('afterbegin', node);
+    },
+    renderPinsList: function (pins) {
+      var fragment = document.createDocumentFragment();
+      for (var i = 0; i < MAX_PINS_QUANTITY; i++) {
+        if (pins[i]) {
+          fragment.appendChild(window.renderPin(pins[i]));
+        }
+      }
+      window.blocks.pinsContainer.appendChild(fragment);
     },
     removePins: function () {
       Array.from(window.blocks.pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
@@ -41,16 +49,6 @@
     features.removeAttribute('disabled');
   };
 
-  var renderPinsList = function (pins) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < MAX_PINS_QUANTITY; i++) {
-      if (pins[i]) {
-        fragment.appendChild(window.renderPin(pins[i]));
-      }
-    }
-    window.blocks.pinsContainer.appendChild(fragment);
-  };
-
   var onMapPinClick = function (evt) {
     window.closePopup = function () {
       if (popup) {
@@ -59,8 +57,8 @@
         document.removeEventListener('keydown', onPopupEscPress);
       }
     };
-    var onPopupEscPress = function (eventObj) {
-      if (eventObj.keyCode === ESC_KEYCODE) {
+    var onPopupEscPress = function (popupEvt) {
+      if (popupEvt.keyCode === window.util.ESC_KEYCODE) {
         window.closePopup();
       }
     };
@@ -75,9 +73,9 @@
     evt.target.classList.add('map__pin--active');
     var alt = target.querySelector('img').alt;
     window.closePopup();
-    for (var j = 0; j < window.pinsList.length; j++) {
-      if (window.pinsList[j].offer.title === alt) {
-        var currentAd = window.pinsList[j];
+    for (var i = 0; i < window.pinsList.length; i++) {
+      if (window.pinsList[i].offer.title === alt) {
+        var currentAd = window.pinsList[i];
         var fragment = document.createDocumentFragment();
         popup = fragment.appendChild(window.renderAd(currentAd));
         window.blocks.map.insertBefore(fragment, filtersContainer);
@@ -86,6 +84,7 @@
         popupClose.addEventListener('click', function () {
           window.closePopup();
         });
+        break;
       }
     }
   };
