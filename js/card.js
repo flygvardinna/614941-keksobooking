@@ -57,8 +57,8 @@
         ad.offer.features.forEach(function (feature) {
           features += '<li class="popup__feature ' + ClassToFeature[feature] + '"></li>';
         });
-        return features;
       }
+      return features;
     };
 
     if (ad.offer.title === '') {

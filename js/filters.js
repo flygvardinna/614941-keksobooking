@@ -28,12 +28,12 @@
   var debounce = function (filterFunction) {
     var lastTimeout = null;
 
-    return function() {
+    return function () {
       var timeoutAruments = arguments;
       if (lastTimeout) {
         window.clearTimeout(lastTimeout);
       }
-      lastTimeout = window.setTimeout(function() {
+      lastTimeout = window.setTimeout(function () {
         filterFunction.apply(null, timeoutAruments);
       }, DEBOUNCE_INTERVAL);
     };
@@ -95,7 +95,6 @@
   };
 
   var updatePins = function () {
-    console.log(selectedFilters);
     window.closePopup();
     window.map.removePins();
     var similarAds = window.pinsList.filter(function (pin) {
