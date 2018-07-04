@@ -2,7 +2,6 @@
 
 (function () {
   var MAIN_MAP_PIN_HALF_WIDTH = Math.floor(65 / 2);
-  var MAIN_MAP_PIN_DISABLED_MIDDLE = Math.floor(65 / 2);
   var MAIN_MAP_PIN_HEIGHT = 65 + 22;
   var START_MAIN_PIN_LEFT = 570;
   var START_MAIN_PIN_TOP = 375;
@@ -10,8 +9,8 @@
   var MAX_Y = 630;
 
   var optionsList;
-  var pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_DISABLED_MIDDLE;
-  var pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_DISABLED_MIDDLE;
+  var pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_HALF_WIDTH;
+  var pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_HALF_WIDTH;
   var mainMapPin = window.blocks.map.querySelector('.map__pin--main');
   var form = document.querySelector('.ad-form');
   var formReset = form.querySelector('.ad-form__reset');

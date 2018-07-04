@@ -2,6 +2,7 @@
 
 (function () {
   var DEBOUNCE_INTERVAL = 500;
+  var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
   var typeFilter = document.querySelector('#housing-type');
   var priceFilter = document.querySelector('#housing-price');
@@ -14,16 +15,12 @@
   var elevatorFilter = document.querySelector('#filter-elevator');
   var conditionerFilter = document.querySelector('#filter-conditioner');
   var selectedFilters = 0;
-  var isWifiChecked;
-  var isDishwasherChecked;
-  var isParkingChecked;
-  var isWasherChecked;
-  var isElevatorChecked;
-  var isConditionerChecked;
-  var selectedType;
-  var selectedPrice;
-  var selectedRoomsNumber;
-  var selectedGuestsNumber;
+  var selectedOptions = {
+    selectedPrice: priceFilter.value,
+    selectedType: typeFilter.value,
+    selectedRoomsNumber: roomsNumberFilter.value,
+    selectedGuestsNumber: guestsNumberFilter.value
+  };
 
   var debounce = function (filterFunction) {
     var lastTimeout = null;
@@ -39,62 +36,47 @@
     };
   };
 
-  var getRank = function (pin) {
-    var rank = 0;
-    var pinPrice = function () {
-      if (pin.offer.price <= 10000) {
-        return 'low';
-      } else if (pin.offer.price > 10000 && pin.offer.price < 50000) {
-        return 'middle';
-      } else {
-        return 'high';
-      }
-    };
-
-    if (pin.offer.type === selectedType) {
-      rank += 1;
-    }
-    if (pinPrice() === selectedPrice) {
-      rank += 1;
-    }
-    if (pin.offer.rooms === selectedRoomsNumber) {
-      rank += 1;
-    }
-    if (pin.offer.guests === selectedGuestsNumber) {
-      rank += 1;
-    }
-    if (pin.offer.features.includes('wifi') && isWifiChecked) {
-      rank += 1;
-    }
-    if (pin.offer.features.includes('dishwasher') && isDishwasherChecked) {
-      rank += 1;
-    }
-    if (pin.offer.features.includes('parking') && isParkingChecked) {
-      rank += 1;
-    }
-    if (pin.offer.features.includes('washer') && isWasherChecked) {
-      rank += 1;
-    }
-    if (pin.offer.features.includes('elevator') && isElevatorChecked) {
-      rank += 1;
-    }
-    if (pin.offer.features.includes('conditioner') && isConditionerChecked) {
-      rank += 1;
-    }
-    return rank;
-  };
-
   var titlesComparator = function (left, right) {
     if (left > right) {
       return 1;
     } else if (left < right) {
       return -1;
-    } else {
-      return 0;
     }
+    return 0;
   };
 
   var updatePins = function () {
+    var featuresConditions = [wifiFilter.checked, dishwasherFilter.checked, parkingFilter.checked, washerFilter.checked, elevatorFilter.checked, conditionerFilter.checked];
+    var filters = Object.values(selectedOptions);
+
+    var getRank = function (pin) {
+      var rank = 0;
+      var pinDetails = [pin.offer.price, pin.offer.type, pin.offer.rooms, pin.offer.guests];
+      var pinPrice = function () {
+        if (pin.offer.price <= 10000) {
+          return 'low';
+        } else if (pin.offer.price > 10000 && pin.offer.price < 50000) {
+          return 'middle';
+        }
+        return 'high';
+      };
+
+      if (pinPrice() === selectedOptions.selectedPrice) {
+        rank += 1;
+      }
+      for (var i = 1; i < filters.length; i++) {
+        if (pinDetails[i] === filters[i]) {
+          rank += 1;
+        }
+      }
+      for (var j = 0; j < FEATURES.length; j++) {
+        if (pin.offer.features.includes(FEATURES[j]) && featuresConditions[j]) {
+          rank += 1;
+        }
+      }
+      return rank;
+    };
+
     window.closePopup();
     window.map.removePins();
     var similarAds = window.pinsList.filter(function (pin) {
@@ -113,7 +95,7 @@
   };
 
   var countTypeAndPriceFilters = function (filterValue) {
-    if (!filterValue || filterValue === 'any') {
+    if (filterValue === 'any') {
       selectedFilters += 1;
     }
   };
@@ -125,187 +107,103 @@
   };
 
   var onTypeFilterChange = debounce(function (evt) {
-    countTypeAndPriceFilters(selectedType);
-    selectedType = evt.target.value;
+    countTypeAndPriceFilters(selectedOptions.selectedType);
+    selectedOptions.selectedType = evt.target.value;
     checkAnyValue(evt);
     updatePins();
   });
 
   var onPriceFilterChange = debounce(function (evt) {
-    countTypeAndPriceFilters(selectedPrice);
-    selectedPrice = evt.target.value;
+    countTypeAndPriceFilters(selectedOptions.selectedPrice);
+    selectedOptions.selectedPrice = evt.target.value;
     checkAnyValue(evt);
     updatePins();
   });
 
   var onRoomsNumberFilterChange = debounce(function (evt) {
-    countRoomsAndGuestsFilters(selectedRoomsNumber);
-    selectedRoomsNumber = parseInt(evt.target.value, 10);
+    countRoomsAndGuestsFilters(selectedOptions.selectedRoomsNumber);
+    selectedOptions.selectedRoomsNumber = parseInt(evt.target.value, 10);
     checkAnyValue(evt);
     updatePins();
   });
 
   var onGuestsNumberFilterChange = debounce(function (evt) {
-    countRoomsAndGuestsFilters(selectedGuestsNumber);
-    selectedGuestsNumber = parseInt(evt.target.value, 10);
+    countRoomsAndGuestsFilters(selectedOptions.selectedGuestsNumber);
+    selectedOptions.selectedGuestsNumber = parseInt(evt.target.value, 10);
     checkAnyValue(evt);
     updatePins();
   });
 
-  var toggleWifiFilter = function () {
-    if (!isWifiChecked) {
-      isWifiChecked = true;
+  var countFeatureFilter = function (filter) {
+    if (filter.checked) {
       selectedFilters += 1;
     } else {
-      isWifiChecked = false;
       selectedFilters -= 1;
     }
     updatePins();
   };
 
-  var toggleDishwasherFilter = function () {
-    if (!isDishwasherChecked) {
-      isDishwasherChecked = true;
-      selectedFilters += 1;
+  var onWifiFilterClick = function (evt) {
+    countFeatureFilter(evt.target);
+  };
+
+  var onDishwasherFilterClick = function (evt) {
+    countFeatureFilter(evt.target);
+  };
+
+  var onParkingFilterClick = function (evt) {
+    countFeatureFilter(evt.target);
+  };
+
+  var onWasheriFilterClick = function (evt) {
+    countFeatureFilter(evt.target);
+  };
+
+  var onElevatorFilterClick = function (evt) {
+    countFeatureFilter(evt.target);
+  };
+
+  var onConditionerFilterClick = function (evt) {
+    countFeatureFilter(evt.target);
+  };
+
+  var toggleFilterFromKeyboard = function (filter) {
+    if (!filter.checked) {
+      filter.checked = true;
     } else {
-      isDishwasherChecked = false;
-      selectedFilters -= 1;
+      filter.checked = false;
     }
-    updatePins();
   };
 
-  var toggleParkingFilter = function () {
-    if (!isParkingChecked) {
-      isParkingChecked = true;
-      selectedFilters += 1;
-    } else {
-      isParkingChecked = false;
-      selectedFilters -= 1;
+  var countFeatureFilterIfKeyboard = function (evt) {
+    if (evt.keyCode === window.util.ENTER_KEYCODE) {
+      toggleFilterFromKeyboard(evt.target);
+      countFeatureFilter(evt.target);
     }
-    updatePins();
-  };
-
-  var toggleWasheriFilter = function () {
-    if (!isWasherChecked) {
-      isWasherChecked = true;
-      selectedFilters += 1;
-    } else {
-      isWasherChecked = false;
-      selectedFilters -= 1;
-    }
-    updatePins();
-  };
-
-  var toggleElevatorFilter = function () {
-    if (!isElevatorChecked) {
-      isElevatorChecked = true;
-      selectedFilters += 1;
-    } else {
-      isElevatorChecked = false;
-      selectedFilters -= 1;
-    }
-    updatePins();
-  };
-
-  var toggleConditionerFilter = function () {
-    if (!isConditionerChecked) {
-      isConditionerChecked = true;
-      selectedFilters += 1;
-    } else {
-      isConditionerChecked = false;
-      selectedFilters -= 1;
-    }
-    updatePins();
-  };
-
-  var onWifiFilterClick = function () {
-    toggleWifiFilter();
-  };
-
-  var onDishwasherFilterClick = function () {
-    toggleDishwasherFilter();
-  };
-
-  var onParkingFilterClick = function () {
-    toggleParkingFilter();
-  };
-
-  var onWasheriFilterClick = function () {
-    toggleWasheriFilter();
-  };
-
-  var onElevatorFilterClick = function () {
-    toggleElevatorFilter();
-  };
-
-  var onConditionerFilterClick = function () {
-    toggleConditionerFilter();
   };
 
   var onWifiFilterEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      if (!wifiFilter.checked) {
-        wifiFilter.checked = true;
-      } else {
-        wifiFilter.checked = false;
-      }
-      toggleWifiFilter();
-    }
+    countFeatureFilterIfKeyboard(evt);
   };
 
   var onDishwasherFilterEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      if (!dishwasherFilter.checked) {
-        dishwasherFilter.checked = true;
-      } else {
-        dishwasherFilter.checked = false;
-      }
-      toggleDishwasherFilter();
-    }
+    countFeatureFilterIfKeyboard(evt);
   };
 
   var onParkingFilterEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      if (!parkingFilter.checked) {
-        parkingFilter.checked = true;
-      } else {
-        parkingFilter.checked = false;
-      }
-      toggleParkingFilter();
-    }
+    countFeatureFilterIfKeyboard(evt);
   };
 
   var onWasherFilterEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      if (!washerFilter.checked) {
-        washerFilter.checked = true;
-      } else {
-        washerFilter.checked = false;
-      }
-      toggleWasheriFilter();
-    }
+    countFeatureFilterIfKeyboard(evt);
   };
 
   var onElevatorFilterEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      if (!elevatorFilter.checked) {
-        elevatorFilter.checked = true;
-      } else {
-        elevatorFilter.checked = false;
-      }
-      toggleElevatorFilter();
-    }
+    countFeatureFilterIfKeyboard(evt);
   };
 
   var onConditionerFilterEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      if (!conditionerFilter.checked) {
-        conditionerFilter.checked = true;
-      } else {
-        conditionerFilter.checked = false;
-      }
-      toggleConditionerFilter();
-    }
+    countFeatureFilterIfKeyboard(evt);
   };
 
   typeFilter.addEventListener('change', onTypeFilterChange);
