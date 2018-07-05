@@ -2,17 +2,15 @@
 
 (function () {
   var MAIN_MAP_PIN_HALF_WIDTH = Math.floor(65 / 2);
-  var MAIN_MAP_PIN_DISABLED_MIDDLE = Math.floor(65 / 2);
   var MAIN_MAP_PIN_HEIGHT = 65 + 22;
   var START_MAIN_PIN_LEFT = 570;
   var START_MAIN_PIN_TOP = 375;
   var MIN_Y = 130;
   var MAX_Y = 630;
-  var ESC_KEYCODE = 27; // повторяется на странице map
 
   var optionsList;
-  var pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_DISABLED_MIDDLE;
-  var pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_DISABLED_MIDDLE;
+  var pointX = START_MAIN_PIN_LEFT + MAIN_MAP_PIN_HALF_WIDTH;
+  var pointY = START_MAIN_PIN_TOP + MAIN_MAP_PIN_HALF_WIDTH;
   var mainMapPin = window.blocks.map.querySelector('.map__pin--main');
   var form = document.querySelector('.ad-form');
   var formReset = form.querySelector('.ad-form__reset');
@@ -30,9 +28,9 @@
   var features = form.querySelector('.features');
 
   var disableFieldsets = function () {
-    for (var i = 0; i < fieldsets.length; i++) {
-      fieldsets[i].setAttribute('disabled', 'disabled');
-    }
+    Array.from(fieldsets).forEach(function (fieldset) {
+      fieldset.setAttribute('disabled', 'disabled');
+    });
   };
 
   var setAddress = function () {
@@ -43,9 +41,9 @@
   var makePageActive = function () {
     window.blocks.map.classList.remove('map--faded');
     form.classList.remove('ad-form--disabled');
-    for (var i = 0; i < fieldsets.length; i++) {
-      fieldsets[i].removeAttribute('disabled');
-    }
+    Array.from(fieldsets).forEach(function (fieldset) {
+      fieldset.removeAttribute('disabled');
+    });
   };
 
   var onTypeChange = function (evt) {
@@ -80,9 +78,9 @@
   };
 
   var bringAllOptionsBack = function () {
-    for (var i = 0; i < optionsList.length; i++) {
-      optionsList[i].classList.remove('hidden');
-    }
+    Array.from(optionsList).forEach(function (option) {
+      option.classList.remove('hidden');
+    });
   };
 
   var checkRoomsAndGuests = function () {
@@ -211,8 +209,8 @@
         document.removeEventListener('keydown', onSuccessEscPress);
         document.removeEventListener('click', onSuccessClick);
       };
-      var onSuccessEscPress = function (eventObj) {
-        if (eventObj.keyCode === ESC_KEYCODE) {
+      var onSuccessEscPress = function (evt) {
+        if (evt.keyCode === window.util.ESC_KEYCODE) {
           closeSuccess();
         }
       };
@@ -227,12 +225,17 @@
     onError: function (errorMessage) {
       var closeError = function () {
         document.body.removeChild(node);
+        errorClose.removeEventListener('click', onErrorCloseClick);
+        document.removeEventListener('keydown', onErrorEscPress);
       };
       var onErrorFiveSecTimeout = function () {
         closeError();
       };
-      var onErrorEscPress = function (eventObj) {
-        if (eventObj.keyCode === ESC_KEYCODE) {
+      var onErrorCloseClick = function () {
+        closeError();
+      };
+      var onErrorEscPress = function (evt) {
+        if (evt.keyCode === window.util.ESC_KEYCODE) {
           closeError();
         }
       };
@@ -244,9 +247,7 @@
       document.body.insertAdjacentElement('afterbegin', node);
       setTimeout(onErrorFiveSecTimeout, 5000);
       var errorClose = document.querySelector('.error-popup__close');
-      errorClose.addEventListener('click', function () {
-        closeError();
-      });
+      errorClose.addEventListener('click', onErrorCloseClick);
       document.addEventListener('keydown', onErrorEscPress);
     }
   };
@@ -258,6 +259,14 @@
 
   var onFormResetClick = function () {
     disablePage();
+  };
+
+  var setMainPin = function () {
+    if (window.blocks.map.classList.contains('map--faded')) {
+      makePageActive();
+      setAddress();
+      window.backend.load(window.map.onLoad, window.map.onError);
+    }
   };
 
   var onMainMapPinMousedown = function (evt) {
@@ -298,10 +307,7 @@
     };
 
     var onMouseUp = function () {
-      makePageActive();
-      setAddress();
-      window.backend.load(window.map.onLoad, window.map.onError);
-
+      setMainPin();
       window.blocks.pinsContainer.removeEventListener('mousemove', onMouseMove);
       window.blocks.pinsContainer.removeEventListener('mouseup', onMouseUp);
     };
@@ -310,12 +316,31 @@
     window.blocks.pinsContainer.addEventListener('mouseup', onMouseUp);
   };
 
+  var onMainMapPinEnterPress = function (evt) {
+    if (evt.keyCode === window.util.ENTER_KEYCODE) {
+      setMainPin();
+    }
+  };
+
+  var onFeatureEnterPress = function (evt) {
+    if (evt.keyCode === window.util.ENTER_KEYCODE) {
+      evt.preventDefault();
+      if (!evt.target.checked) {
+        evt.target.checked = true;
+      } else {
+        evt.target.checked = false;
+      }
+    }
+  };
+
   mainMapPin.addEventListener('mousedown', onMainMapPinMousedown);
+  mainMapPin.addEventListener('keydown', onMainMapPinEnterPress);
   type.addEventListener('change', onTypeChange);
   timeCheckin.addEventListener('change', onTimeCheckinChange);
   timeCheckout.addEventListener('change', onTimeCheckoutChange);
   roomsNumber.addEventListener('change', onRoomsNumberChange);
   guestsNumber.addEventListener('change', onGuestsNumberChange);
+  features.addEventListener('keydown', onFeatureEnterPress);
   form.addEventListener('submit', onFormSubmit);
   formReset.addEventListener('click', onFormResetClick);
 

@@ -26,9 +26,18 @@
 
   window.renderAd = function (ad) {
     var adCard = adTemplate.cloneNode(true);
-    var featuresList = adCard.querySelector('.popup__features');
-    var photoTemplate = adCard.querySelector('.popup__photo');
     var adType = ad.offer.type;
+    var featuresList = adCard.querySelector('.popup__features');
+    var photosContainer = adCard.querySelector('.popup__photos');
+    var photoTemplate = photosContainer.querySelector('.popup__photo');
+    var popupTitle = adCard.querySelector('.popup__title');
+    var popupAddress = adCard.querySelector('.popup__text--address');
+    var popupPrice = adCard.querySelector('.popup__text--price');
+    var popupType = adCard.querySelector('.popup__type');
+    var popupRoomsAndGuests = adCard.querySelector('.popup__text--capacity');
+    var popupTime = adCard.querySelector('.popup__text--time');
+    var popupDescription = adCard.querySelector('.popup__description');
+    var popupAvatar = adCard.querySelector('.popup__avatar');
 
     var renderPhotos = function (photos) {
       var fragment = document.createDocumentFragment();
@@ -42,23 +51,63 @@
 
     var setFeatures = function () {
       var features = '';
-      ad.offer.features.forEach(function (feature) {
-        features += '<li class="popup__feature ' + ClassToFeature[feature] + '"></li>';
-      });
+      if (ad.offer.features.length === 0) {
+        adCard.removeChild(featuresList);
+      } else {
+        ad.offer.features.forEach(function (feature) {
+          features += '<li class="popup__feature ' + ClassToFeature[feature] + '"></li>';
+        });
+      }
       return features;
     };
 
-    adCard.querySelector('.popup__title').textContent = ad.offer.title;
-    adCard.querySelector('.popup__text--address').textContent = ad.offer.address;
-    adCard.querySelector('.popup__text--price').textContent = ad.offer.price + '₽/ночь';
-    adCard.querySelector('.popup__type').textContent = insertCorrectType(adType);
-    adCard.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-    adCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
+    if (ad.offer.title === '') {
+      adCard.removeChild(popupTitle);
+    } else {
+      popupTitle.textContent = ad.offer.title;
+    }
+    if (ad.offer.address === '') {
+      adCard.removeChild(popupAddress);
+    } else {
+      popupAddress.textContent = ad.offer.address;
+    }
+    if (!ad.offer.price) {
+      adCard.removeChild(popupPrice);
+    } else {
+      popupPrice.textContent = ad.offer.price + '₽/ночь';
+    }
+    if (adType === '') {
+      adCard.removeChild(popupType);
+    } else {
+      popupType.textContent = insertCorrectType(adType);
+    }
+    if (isNaN(ad.offer.rooms) || isNaN(ad.offer.guests)) {
+      adCard.removeChild(popupRoomsAndGuests);
+    } else {
+      popupRoomsAndGuests.textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+    }
+    if (!ad.offer.checkin || !ad.offer.checkout) {
+      adCard.removeChild(popupTime);
+    } else {
+      popupTime.textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
+    }
     featuresList.innerHTML = setFeatures();
-    adCard.querySelector('.popup__description').textContent = ad.offer.description;
-    adCard.querySelector('.popup__avatar').src = ad.author.avatar;
-    photoTemplate.src = ad.offer.photos[0];
-    adCard.querySelector('.popup__photos').appendChild(renderPhotos(ad.offer.photos));
+    if (ad.offer.description === '') {
+      adCard.removeChild(popupDescription);
+    } else {
+      popupDescription.textContent = ad.offer.description;
+    }
+    if (ad.author.avatar === '') {
+      adCard.removeChild(popupAvatar);
+    } else {
+      popupAvatar.src = ad.author.avatar;
+    }
+    if (ad.offer.photos.length === 0) {
+      adCard.removeChild(photosContainer);
+    } else {
+      photoTemplate.src = ad.offer.photos[0];
+      photosContainer.appendChild(renderPhotos(ad.offer.photos));
+    }
     return adCard;
   };
 })();

@@ -873,14 +873,24 @@ fieldset {
 }
 
 .ad-form__photo {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+
   margin-right: 10px;
   margin-bottom: 10px;
+  padding: 0 15px;
 
   width: 70px;
   height: 70px;
 
   background-color: #e4e4de;
   border-radius: 5px;
+
+  text-align: center;
 }
 
 .ad-form__element--submit {
