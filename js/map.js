@@ -55,7 +55,11 @@
         window.blocks.map.removeChild(popup);
         popup = false;
         document.removeEventListener('keydown', onPopupEscPress);
+        popupClose.removeEventListener('click', onPopupCloseClick);
       }
+    };
+    var onPopupCloseClick = function () {
+      window.closePopup();
     };
     var onPopupEscPress = function (popupEvt) {
       if (popupEvt.keyCode === window.util.ESC_KEYCODE) {
@@ -81,9 +85,7 @@
         window.blocks.map.insertBefore(fragment, filtersContainer);
         var popupClose = popup.querySelector('.popup__close');
         document.addEventListener('keydown', onPopupEscPress);
-        popupClose.addEventListener('click', function () {
-          window.closePopup();
-        });
+        popupClose.addEventListener('click', onPopupCloseClick);
         break;
       }
     }

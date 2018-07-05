@@ -225,8 +225,13 @@
     onError: function (errorMessage) {
       var closeError = function () {
         document.body.removeChild(node);
+        errorClose.removeEventListener('click', onErrorCloseClick);
+        document.removeEventListener('keydown', onErrorEscPress);
       };
       var onErrorFiveSecTimeout = function () {
+        closeError();
+      };
+      var onErrorCloseClick = function () {
         closeError();
       };
       var onErrorEscPress = function (evt) {
@@ -242,9 +247,7 @@
       document.body.insertAdjacentElement('afterbegin', node);
       setTimeout(onErrorFiveSecTimeout, 5000);
       var errorClose = document.querySelector('.error-popup__close');
-      errorClose.addEventListener('click', function () {
-        closeError();
-      });
+      errorClose.addEventListener('click', onErrorCloseClick);
       document.addEventListener('keydown', onErrorEscPress);
     }
   };
