@@ -10,6 +10,27 @@
   var imageContainer = flatPhotosContainer.querySelector('.ad-form__photo');
   var imagePreview;
 
+  window.userPictures = {
+    removeAvatar: function () {
+      avatarPreview.src = 'img/muffin-grey.svg';
+    },
+    removeImages: function () {
+      var firstPic = imageContainer.querySelector('img');
+      if (firstPic) {
+        imageContainer.removeChild(firstPic);
+      }
+      var otherPics = flatPhotosContainer.querySelector('img');
+      if (otherPics) {
+        var imagesContainers = Array.from(flatPhotosContainer.querySelectorAll('.ad-form__photo'));
+        imagesContainers.shift();
+        imagesContainers.forEach(function (image) {
+          image.remove();
+        });
+        imagePreview = null;
+      }
+    }
+  };
+
   var addPhoto = function () {
     var fragment = document.createDocumentFragment();
     var newImageContainer = imageContainer.cloneNode(true);
