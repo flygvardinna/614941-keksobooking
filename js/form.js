@@ -26,6 +26,7 @@
   var guestsNumber = form.querySelector('#capacity');
   var description = form.querySelector('#description');
   var features = form.querySelector('.features');
+  var featuresOptions = features.querySelectorAll('.feature__checkbox');
 
   var disableFieldsets = function () {
     Array.from(fieldsets).forEach(function (fieldset) {
@@ -196,7 +197,7 @@
     roomsNumber.value = '1';
     guestsNumber.value = '1';
     description.value = '';
-    Array.from(features.querySelectorAll('.feature__checkbox')).forEach(function (feature) {
+    Array.from(featuresOptions).forEach(function (feature) {
       feature.checked = false;
     });
     disableFieldsets();
