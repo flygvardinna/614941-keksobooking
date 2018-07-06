@@ -77,7 +77,7 @@
       return rank;
     };
 
-    window.closePopup();
+    window.map.closePopup();
     window.map.removePins();
     var similarAds = window.pinsList.filter(function (pin) {
       return getRank(pin) === selectedFilters;
