@@ -84,11 +84,11 @@
         var fragment = document.createDocumentFragment();
         popup = fragment.appendChild(window.renderAd(pin));
         window.blocks.map.insertBefore(fragment, filtersContainer);
-        var popupClose = popup.querySelector('.popup__close');
-        document.addEventListener('keydown', onPopupEscPress);
-        popupClose.addEventListener('click', onPopupCloseClick);
       }
     });
+    var popupClose = popup.querySelector('.popup__close');
+    document.addEventListener('keydown', onPopupEscPress);
+    popupClose.addEventListener('click', onPopupCloseClick);
   };
 
   window.blocks.pinsContainer.addEventListener('click', onMapPinClick);
