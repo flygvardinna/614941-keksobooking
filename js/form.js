@@ -180,7 +180,6 @@
   var disablePage = function () {
     window.blocks.map.classList.add('map--faded');
     form.classList.add('ad-form--disabled');
-    var popup = window.blocks.map.querySelector('.popup');
     window.map.closePopup();
     window.map.removePins();
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
