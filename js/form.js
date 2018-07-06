@@ -200,6 +200,8 @@
     Array.from(featuresOptions).forEach(function (feature) {
       feature.checked = false;
     });
+    window.userPictures.removeAvatar();
+    window.userPictures.removeImages();
     disableFieldsets();
   };
 
