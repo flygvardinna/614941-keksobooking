@@ -41,11 +41,15 @@
 
     var renderPhotos = function (photos) {
       var fragment = document.createDocumentFragment();
-      for (var i = 1; i < photos.length; i++) {
+      photos.forEach(function (it, index) {
+        if (index === 0) {
+          return;
+        }
         var photo = photoTemplate.cloneNode(true);
-        photo.src = photos[i];
+        photo.src = it;
         fragment.appendChild(photo);
-      }
+      });
+
       return fragment;
     };
 

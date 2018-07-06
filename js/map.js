@@ -79,18 +79,16 @@
     evt.target.classList.add('map__pin--active');
     var alt = target.querySelector('img').alt;
     window.map.closePopup();
-    for (var i = 0; i < window.pinsList.length; i++) {
-      if (window.pinsList[i].offer.title === alt) {
-        var currentAd = window.pinsList[i];
+    window.pinsList.some(function (pin) {
+      if (pin.offer.title === alt) {
         var fragment = document.createDocumentFragment();
-        popup = fragment.appendChild(window.renderAd(currentAd));
+        popup = fragment.appendChild(window.renderAd(pin));
         window.blocks.map.insertBefore(fragment, filtersContainer);
-        var popupClose = popup.querySelector('.popup__close');
-        document.addEventListener('keydown', onPopupEscPress);
-        popupClose.addEventListener('click', onPopupCloseClick);
-        break;
       }
-    }
+    });
+    var popupClose = popup.querySelector('.popup__close');
+    document.addEventListener('keydown', onPopupEscPress);
+    popupClose.addEventListener('click', onPopupCloseClick);
   };
 
   window.blocks.pinsContainer.addEventListener('click', onMapPinClick);

@@ -39,7 +39,8 @@
   var titlesComparator = function (left, right) {
     if (left > right) {
       return 1;
-    } else if (left < right) {
+    }
+    if (left < right) {
       return -1;
     }
     return 0;
@@ -55,25 +56,28 @@
       var pinPrice = function () {
         if (pin.offer.price <= 10000) {
           return 'low';
-        } else if (pin.offer.price > 10000 && pin.offer.price < 50000) {
+        }
+        if (pin.offer.price > 10000 && pin.offer.price < 50000) {
           return 'middle';
         }
         return 'high';
       };
 
-      if (pinPrice() === selectedOptions.selectedPrice) {
-        rank += 1;
-      }
-      for (var i = 1; i < filters.length; i++) {
-        if (pinDetails[i] === filters[i]) {
+      pinDetails.forEach(function (it, index) {
+        if (index === 0) {
+          if (pinPrice() === selectedOptions.selectedPrice) {
+            rank += 1;
+          }
+        }
+        if (it === filters[index]) {
           rank += 1;
         }
-      }
-      for (var j = 0; j < FEATURES.length; j++) {
-        if (pin.offer.features.includes(FEATURES[j]) && featuresConditions[j]) {
+      });
+      featuresConditions.forEach(function (it, index) {
+        if (it && pin.offer.features.includes(FEATURES[index])) {
           rank += 1;
         }
-      }
+      });
       return rank;
     };
 
