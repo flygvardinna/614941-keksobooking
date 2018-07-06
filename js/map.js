@@ -39,6 +39,12 @@
       Array.from(window.blocks.pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)')).forEach(function (pin) {
         pin.remove();
       });
+    },
+    closePopup: function () {
+      if (popup) {
+        window.blocks.map.removeChild(popup);
+        popup = false;
+      }
     }
   };
 
@@ -50,20 +56,16 @@
   };
 
   var onMapPinClick = function (evt) {
-    window.closePopup = function () {
-      if (popup) {
-        window.blocks.map.removeChild(popup);
-        popup = false;
-        document.removeEventListener('keydown', onPopupEscPress);
-        popupClose.removeEventListener('click', onPopupCloseClick);
-      }
-    };
     var onPopupCloseClick = function () {
-      window.closePopup();
+      window.map.closePopup();
+      popupClose.removeEventListener('click', onPopupCloseClick);
+      document.removeEventListener('keydown', onPopupEscPress);
     };
     var onPopupEscPress = function (popupEvt) {
       if (popupEvt.keyCode === window.util.ESC_KEYCODE) {
-        window.closePopup();
+        window.map.closePopup();
+        popupClose.removeEventListener('click', onPopupCloseClick);
+        document.removeEventListener('keydown', onPopupEscPress);
       }
     };
     var target = evt.target;
@@ -76,7 +78,7 @@
     }
     evt.target.classList.add('map__pin--active');
     var alt = target.querySelector('img').alt;
-    window.closePopup();
+    window.map.closePopup();
     for (var i = 0; i < window.pinsList.length; i++) {
       if (window.pinsList[i].offer.title === alt) {
         var currentAd = window.pinsList[i];
