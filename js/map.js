@@ -79,9 +79,8 @@
     var alt = target.querySelector('img').alt;
     window.pinsList.some(function (pin) {
       if (pin.offer.title === alt) {
-        var fragment = document.createDocumentFragment();
-        popup = fragment.appendChild(window.renderAd(pin));
-        window.blocks.map.insertBefore(fragment, filtersContainer);
+        popup = window.renderAd(pin);
+        window.blocks.map.insertBefore(popup, filtersContainer);
       }
     });
     var popupClose = popup.querySelector('.popup__close');

@@ -2,7 +2,7 @@
 
 (function () {
   var adTemplate = window.blocks.template.content.querySelector('.map__card');
-  var ClassToFeature = {
+  var classToFeature = {
     'wifi': 'popup__feature--wifi',
     'dishwasher': 'popup__feature--dishwasher',
     'parking': 'popup__feature--parking',
@@ -55,36 +55,16 @@
 
     var setFeatures = function () {
       var features = '';
-      if (ad.offer.features.length === 0) {
-        adCard.removeChild(featuresList);
-      } else {
-        ad.offer.features.forEach(function (feature) {
-          features += '<li class="popup__feature ' + ClassToFeature[feature] + '"></li>';
-        });
-      }
+      ad.offer.features.forEach(function (feature) {
+        features += '<li class="popup__feature ' + classToFeature[feature] + '"></li>';
+      });
       return features;
     };
+    popupTitle.textContent = ad.offer.title;
+    popupAddress.textContent = ad.offer.address;
+    popupPrice.textContent = ad.offer.price + '₽/ночь';
+    popupType.textContent = insertCorrectType(adType);
 
-    if (ad.offer.title === '') {
-      adCard.removeChild(popupTitle);
-    } else {
-      popupTitle.textContent = ad.offer.title;
-    }
-    if (ad.offer.address === '') {
-      adCard.removeChild(popupAddress);
-    } else {
-      popupAddress.textContent = ad.offer.address;
-    }
-    if (!ad.offer.price) {
-      adCard.removeChild(popupPrice);
-    } else {
-      popupPrice.textContent = ad.offer.price + '₽/ночь';
-    }
-    if (adType === '') {
-      adCard.removeChild(popupType);
-    } else {
-      popupType.textContent = insertCorrectType(adType);
-    }
     if (isNaN(ad.offer.rooms) || isNaN(ad.offer.guests)) {
       adCard.removeChild(popupRoomsAndGuests);
     } else {
@@ -96,11 +76,8 @@
       popupTime.textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
     }
     featuresList.innerHTML = setFeatures();
-    if (ad.offer.description === '') {
-      adCard.removeChild(popupDescription);
-    } else {
-      popupDescription.textContent = ad.offer.description;
-    }
+    popupDescription.textContent = ad.offer.description;
+
     if (ad.author.avatar === '') {
       adCard.removeChild(popupAvatar);
     } else {
