@@ -96,14 +96,11 @@
       return rank;
     };
 
-    console.log(selectedFilters);
     window.map.closePopup();
     window.map.removePins();
     var similarAds = window.pinsList.filter(function (pin) {
       return getRank(pin) === selectedFilters;
     });
-    console.log(featuresConditions);
-    console.log(filters);
     window.map.renderPinsList(similarAds.sort(function (left, right) {
       var rankDiff = titlesComparator(left.offer.title, right.offer.title);
       return rankDiff;
