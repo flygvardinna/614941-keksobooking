@@ -44,6 +44,8 @@
       if (popup) {
         window.blocks.map.removeChild(popup);
         popup = false;
+        var activePin = window.blocks.pinsContainer.querySelector('.map__pin--active');
+        activePin.classList.remove('map__pin--active');
       }
     }
   };
@@ -72,13 +74,9 @@
     if (target.tagName !== 'BUTTON' || target.classList.contains('map__pin--main')) {
       return;
     }
-    var activePin = window.blocks.pinsContainer.querySelector('.map__pin--active');
-    if (activePin) {
-      activePin.classList.remove('map__pin--active');
-    }
+    window.map.closePopup();
     evt.target.classList.add('map__pin--active');
     var alt = target.querySelector('img').alt;
-    window.map.closePopup();
     window.pinsList.some(function (pin) {
       if (pin.offer.title === alt) {
         var fragment = document.createDocumentFragment();
