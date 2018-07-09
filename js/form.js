@@ -182,6 +182,7 @@
     form.classList.add('ad-form--disabled');
     window.map.closePopup();
     window.map.removePins();
+    window.clearFilters();
     mainMapPin.style.left = START_MAIN_PIN_LEFT + 'px';
     mainMapPin.style.top = START_MAIN_PIN_TOP + 'px';
     title.value = '';

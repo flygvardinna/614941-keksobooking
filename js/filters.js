@@ -8,18 +8,35 @@
   var priceFilter = document.querySelector('#housing-price');
   var roomsNumberFilter = document.querySelector('#housing-rooms');
   var guestsNumberFilter = document.querySelector('#housing-guests');
+  var mainFilters = document.querySelectorAll('.map__filter');
   var wifiFilter = document.querySelector('#filter-wifi');
   var dishwasherFilter = document.querySelector('#filter-dishwasher');
   var parkingFilter = document.querySelector('#filter-parking');
   var washerFilter = document.querySelector('#filter-washer');
   var elevatorFilter = document.querySelector('#filter-elevator');
   var conditionerFilter = document.querySelector('#filter-conditioner');
+  var optionsFilters = document.querySelectorAll('.map__checkbox');
   var selectedFilters = 0;
   var selectedOptions = {
     selectedPrice: priceFilter.value,
     selectedType: typeFilter.value,
     selectedRoomsNumber: roomsNumberFilter.value,
     selectedGuestsNumber: guestsNumberFilter.value
+  };
+
+  window.clearFilters = function () {
+    Array.from(mainFilters).forEach(function (filter) {
+      filter.value = 'any';
+    });
+    Array.from(optionsFilters).forEach(function (filter) {
+      filter.checked = false;
+    });
+    selectedFilters = 0;
+    for (var key in selectedOptions) {
+      if (selectedOptions.hasOwnProperty(key)) {
+        selectedOptions[key] = 'any';
+      }
+    }
   };
 
   var debounce = function (filterFunction) {
