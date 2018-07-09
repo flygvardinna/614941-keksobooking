@@ -32,9 +32,6 @@
       filter.checked = false;
     });
     selectedFilters = 0;
-    /*for (var key in selectedOptions) {
-      selectedOptions[key] = 'any';
-    }*/
     for (var key in selectedOptions) {
       if (selectedOptions.hasOwnProperty(key)) {
         selectedOptions[key] = 'any';
