@@ -42,7 +42,7 @@
 
       var renderPhotos = function (photos) {
         var fragment = document.createDocumentFragment();
-        photos.forEach(function (it, index) {
+        photos.forEach(function (it) {
           var photo = photoTemplate.cloneNode(true);
           photo.src = it;
           fragment.appendChild(photo);
@@ -97,5 +97,5 @@
         photosContainer.appendChild(renderPhotos(ad.offer.photos));
       }
     }
-  }
+  };
 })();

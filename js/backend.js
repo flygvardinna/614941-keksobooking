@@ -30,7 +30,7 @@
     load: function (onLoad, onError) {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
-      checkIfSuccess (xhr, onLoad, onError, MESSAGE_LOAD);
+      checkIfSuccess(xhr, onLoad, onError, MESSAGE_LOAD);
 
       xhr.open('GET', URL + '/data');
       xhr.send();
@@ -38,7 +38,7 @@
     upload: function (data, onLoad, onError) {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
-      checkIfSuccess (xhr, onLoad, onError, MESSAGE_UPLOAD);
+      checkIfSuccess(xhr, onLoad, onError, MESSAGE_UPLOAD);
 
       xhr.open('POST', URL);
       xhr.send(data);
